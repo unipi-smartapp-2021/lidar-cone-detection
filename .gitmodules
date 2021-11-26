@@ -1,0 +1,3 @@
+[submodule "roslidar_conversion_tool/ros_numpy"]
+	path = roslidar_conversion_tool/ros_numpy
+	url = ../../eric-wieser/ros_numpy

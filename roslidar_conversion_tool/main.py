@@ -20,6 +20,7 @@ def convert_pc_msg_to_np(pc_msg):
 
     # Conversion from PointCloud2 msg to np array.
     pc_np = ros_numpy.point_cloud2.pointcloud2_to_xyz_array(pc_msg, remove_nans=True)
+    pc_np = np.asarray(list(filter(lambda x: ~(-90 < x[0] < -10) and (-0.15 < x[2] < 0.90), pc_np))) # Cutting the view between 120°
     pcd_obj = pypcd.make_xyz_point_cloud(pc_np)
     return pc_np, pcd_obj  # point cloud in numpy and pcd format
 
@@ -35,6 +36,5 @@ for topic, msg, t in rosbag.Bag(bag_file__path).read_messages():
         i += 1
 
 """ Visualizzation of .pcd files"""
-cloud = o3d.io.read_point_cloud("./pcd_outputs/cloud9.pcd") # Read the point cloud file
+cloud = o3d.io.read_point_cloud("./pcd_outputs/cloud0.pcd") # Read the point cloud file
 o3d.visualization.draw_geometries([cloud]) # Visualize the point cloud
-

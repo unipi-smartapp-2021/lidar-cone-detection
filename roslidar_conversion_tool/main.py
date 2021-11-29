@@ -1,9 +1,14 @@
 import ros_numpy  # apt install ros-noetic-ros-numpy
 import rosbag
 import numpy as np
+from PIL import Image
 from pypcd import pypcd
 import pptk
 import open3d as o3d
+from scipy.interpolate.ndgriddata import griddata
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.ndimage import rotate
 """
 Simple tool to convert a RosBag file containing Lidar Topics into a
 numpy arrays and .pcd files.
@@ -20,12 +25,26 @@ def convert_pc_msg_to_np(pc_msg):
 
     # Conversion from PointCloud2 msg to np array.
     pc_np = ros_numpy.point_cloud2.pointcloud2_to_xyz_array(pc_msg, remove_nans=True)
+    df = pd.DataFrame(data=pc_np, columns=["X", "Y", "Z"])
+    print(df.X.describe())
+    print(df.Y.describe())
+    print(df.Z.describe())
     pc_np = np.asarray(list(filter(lambda x: ~(-90 < x[0] < -10) and (-0.15 < x[2] < 0.90), pc_np))) # Cutting the view between 120°
     pcd_obj = pypcd.make_xyz_point_cloud(pc_np)
     return pc_np, pcd_obj  # point cloud in numpy and pcd format
 
 
-i = 0
+def cart2sph(x, y, z):
+    xy = np.sqrt(x ** 2 + y ** 2)  # sqrt(x² + y²)
+    x_2 = x ** 2
+    y_2 = y ** 2
+    z_2 = z ** 2
+    r = np.sqrt(x_2 + y_2 + z_2)  # r = sqrt(x² + y² + z²)
+    theta = np.arctan2(y, x)
+    phi = np.arctan2(xy, z)
+    return r, theta, phi
+
+"""i = 0
 topic_to_filter = "/carla/ego_vehicle/lidar"
 bag_file__path = './lidar_bag.bag'
 pcd_output_path = './pcd_outputs'
@@ -33,8 +52,24 @@ for topic, msg, t in rosbag.Bag(bag_file__path).read_messages():
     if topic == topic_to_filter:
         pc_np, pcd_obj = convert_pc_msg_to_np(msg)
         pcd_obj.save(pcd_output_path+'/cloud'+str(i)+'.pcd')
-        i += 1
+        i += 1"""
 
 """ Visualizzation of .pcd files"""
 cloud = o3d.io.read_point_cloud("./pcd_outputs/cloud0.pcd") # Read the point cloud file
-o3d.visualization.draw_geometries([cloud]) # Visualize the point cloud
+out_arr = np.asarray(cloud.points)
+out_arr = np.asarray(list(filter(lambda x: (0 < x[0] < 40) and (0 < x[2] < 0.90), out_arr)))
+df = pd.DataFrame(data=out_arr, columns=["X", "Y", "Z"])
+# normalized_df=(df.X-df.min())/(df.max()-df.min())
+r, theta, phi = cart2sph(df.Y.values, df.Z.values, df.X.values, )
+df['R'] = r
+df['tetha'] = theta
+df['phi'] = phi
+df.plot.scatter(x='tetha', y='phi', c='R', colormap='viridis', s=5)
+plt.show()
+pcd = o3d.geometry.PointCloud()
+pcd.points = o3d.utility.Vector3dVector(out_arr)
+o3d.io.write_point_cloud("./sync.ply", pcd)
+
+pcd_load = o3d.io.read_point_cloud("./sync.ply")
+o3d.visualization.draw_geometries([pcd_load])
+# o3d.visualization.draw_geometries([cloud]) # Visualize the point cloud

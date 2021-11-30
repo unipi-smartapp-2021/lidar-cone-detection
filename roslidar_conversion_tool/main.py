@@ -1,3 +1,4 @@
+import cv2
 import ros_numpy  # apt install ros-noetic-ros-numpy
 import rosbag
 import numpy as np
@@ -8,6 +9,7 @@ from scipy.interpolate.ndgriddata import griddata
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.ndimage import rotate
+import math
 """
 Simple tool to convert a RosBag file containing Lidar Topics into a
 numpy arrays and .pcd files.
@@ -43,6 +45,14 @@ def cart2sph(x, y, z):
     phi = np.arctan2(xy, z)
     return r, theta, phi
 
+
+def polar2cart(r, theta, phi):
+    return [
+         r * math.sin(theta) * math.cos(phi),
+         r * math.sin(theta) * math.sin(phi),
+         r * math.cos(theta)
+    ]
+
 """i = 0
 topic_to_filter = "/carla/ego_vehicle/lidar"
 bag_file__path = './lidar_bag.bag'
@@ -56,19 +66,29 @@ for topic, msg, t in rosbag.Bag(bag_file__path).read_messages():
 """ Visualizzation of .pcd files"""
 cloud = o3d.io.read_point_cloud("./pcd_outputs/cloud0.pcd") # Read the point cloud file
 out_arr = np.asarray(cloud.points)
-out_arr = np.asarray(list(filter(lambda x: (0 < x[0] < 40) and (0 < x[2] < 0.90), out_arr)))
+out_arr = np.asarray(list(filter(lambda x: (0 < x[0] < 40) and (-0.5 < x[2] < 0.90), out_arr)))
 df = pd.DataFrame(data=out_arr, columns=["X", "Y", "Z"])
-# normalized_df=(df.X-df.min())/(df.max()-df.min())
 r, theta, phi = cart2sph(df.Y.values, df.Z.values, df.X.values, )
 df['R'] = r
-df['tetha'] = theta
-df['phi'] = phi
+df.R = ((df.R - df.R.min()) / (df.R.max() - df.R.min()))*255
+df['tetha'] = ((theta - np.min(theta)) / (np.max(theta) - np.min(theta)))*600
+df['phi'] = ((phi - np.min(phi)) / (np.max(phi) - np.min(phi)))*400
+print("Min theta:" + str(np.mean(np.abs(theta[:-1] - theta[1:])))) # 0.25 tetha
+print("Min phi:" + str(np.mean(np.abs(phi[:-1] - phi[1:]))))
+image = np.ones([401, 601, 1], np.uint8)*255
+df = df.astype(int)
+for index, row in df.iterrows():
+    image[row["phi"], row["tetha"]] = row["R"]
+
 df.plot.scatter(x='tetha', y='phi', c='R', colormap='viridis', s=5)
 plt.show()
+arr = df[["tetha", "phi", "R"]].values
+cv2.imwrite('a.png', image)
+
 pcd = o3d.geometry.PointCloud()
 pcd.points = o3d.utility.Vector3dVector(out_arr)
-o3d.io.write_point_cloud("./sync.ply", pcd)
+# o3d.io.write_point_cloud("./sync.ply", pcd)
 
 pcd_load = o3d.io.read_point_cloud("./sync.ply")
-o3d.visualization.draw_geometries([pcd_load])
+# o3d.visualization.draw_geometries([pcd_load])
 # o3d.visualization.draw_geometries([cloud]) # Visualize the point cloud

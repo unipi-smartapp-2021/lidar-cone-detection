@@ -3,7 +3,6 @@ import rosbag
 import numpy as np
 from PIL import Image
 from pypcd import pypcd
-import pptk
 import open3d as o3d
 from scipy.interpolate.ndgriddata import griddata
 import pandas as pd

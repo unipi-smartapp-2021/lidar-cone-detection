@@ -1,6 +1,11 @@
 # Ros Lidar Converter to PCD
 Ros provide data inside a ros bag file format *.bag*. In this file we
 can find different messages from different topics.
+## Dependencies
+```
+pip install py3rosmsgs
+pip install --extra-index-url https://rospypi.github.io/simple/ rospy rosbag
+```
 ### The lidar messages
 The lidar messages coming from the topic **/carla/ego_vehicle/lidar** are
 encoded in the PointCloud2 format, where the X,Y,Z are converted in a 

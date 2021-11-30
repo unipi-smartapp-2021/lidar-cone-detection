@@ -3,8 +3,6 @@ import rosbag
 import numpy as np
 import argparse
 from pypcd import pypcd
-import pptk
-import open3d as o3d
 
 
 def convert_pc_msg_to_np(pc_msg):
@@ -25,9 +23,9 @@ def convert_pc_msg_to_np(pc_msg):
 
 def parse_arguments(known=False):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--topic', type=str, default="", help='message topic')
+    parser.add_argument('--topic', type=str, default="/carla/ego_vehicle/lidar", help='message topic')
     parser.add_argument('--rosbag', type=str, default="", help='dataset_bag.bag path')
-    parser.add_argument('--path', type=str, default="", help='path where the pointclouds are going to be stored')
+    parser.add_argument('--path', type=str, default="src/Lidar/datasets", help='path where the pointclouds are going to be stored')
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 
@@ -37,13 +35,13 @@ if __name__ == "__main__":
     Simple tool to convert a RosBag file containing Lidar Topics into a
     numpy arrays and .pcd files.
     """
-    opt = parse_arguments()
+    opt_parser = parse_arguments()
     i = 0
-    topic_to_filter = opt.topic
-    bag_file__path = opt.rosbag
-    pcd_output_path = opt.path
+    topic_to_filter = opt_parser.topic
+    bag_file__path = opt_parser.rosbag
+    pcd_output_path = opt_parser.path
     for topic, msg, t in rosbag.Bag(bag_file__path).read_messages():
         if topic == topic_to_filter:
-            pc_np, pcd_obj = convert_pc_msg_to_np(msg)
-            pcd_obj.save(pcd_output_path+'/cloud'+str(i)+'.pcd')
+            pcd_np, pcd = convert_pc_msg_to_np(msg)
+            pcd.save(pcd_output_path+'/lidar_pointcloud'+str(i)+'.pcd')
             i += 1

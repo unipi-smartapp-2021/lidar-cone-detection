@@ -1,4 +1,4 @@
-import ros_numpy  # apt install ros-noetic-ros-numpy
+from ros_numpy.src import ros_numpy
 import rosbag
 import numpy as np
 import argparse

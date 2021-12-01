@@ -2,11 +2,11 @@
 Sensory data group that works with the cone detection for both stereocamera and lidar.
 ## Repository structure
 ```bash
-Lidar-cone-detection
+lidar-cone-detection
 ├── example_grayscale.jpg
 ├── README.md
 └── src
-    ├── Lidar
+    ├── lidar
     │   ├── convert_rosbag_to_pcd.py
     │   ├── lidar_bag.bag
     │   ├── pcd_outputs

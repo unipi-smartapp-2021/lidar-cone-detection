@@ -1,8 +1,8 @@
 import shutil
 import os
 import argparse
-# import cv2
-import glob
+import cv2
+from glob import glob
 from tqdm import tqdm
 import numpy as np
 
@@ -13,7 +13,7 @@ def parse_arguments(known=False):
     parser.add_argument('--path', type=str, default="datasets/",
                         help='path where the dataset is going to be stored')
     parser.add_argument('--m', type=str, default="move", help='move or copy the dataset')
-    parser.add_argument('--grayscale', type=bool, default=False, help='convert the dataset images to grayscale')
+    parser.add_argument('--grayscale', action='store_true', help='convert the dataset images to grayscale')
     parser.add_argument('--split', nargs='+', type=float, default=[0.8, 0.1, 0.1],
                         help='split the dataset into training, validation and test sets')
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
@@ -28,7 +28,7 @@ def convert_to_grayscale(images_list, dataset_path) -> None:
         cv2.imwrite(image, grayscale_image)
 
     # Fix the labels
-    labels_list = glob.glob(dataset_path + "labels/*.txt")
+    labels_list = glob(dataset_path + "labels/*.txt")
     for label in labels_list:
         with open(label, "r+") as datafile:
             records = datafile.readlines()
@@ -90,7 +90,7 @@ if __name__ == "__main__":
         else:
             raise ValueError("Passed an incorrect value for the --m argument, use \"move\" or \"copy\"")
 
-    images = glob.glob(target+"/images/*.jpg")
+    images = glob(target+"/images/*.jpg")
 
     # Convert images to grayscale and fix the labels
     if opt_parser.grayscale:

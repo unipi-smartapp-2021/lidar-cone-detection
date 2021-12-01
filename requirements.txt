@@ -1,0 +1,18 @@
+# For the camera cone detection work
+cv2
+tqdm
+numpy
+py7zr
+glob
+zipfile
+
+# For the lidar cone detection work
+py3rosmsgs
+open3d
+pypcd
+pptk
+roslz4 --extra-index-url https://rospypi.github.io/simple/
+--extra-index-url https://rospypi.github.io/simple/ rospy rosbag
+
+# Install othe requirements for yolov5 directly from the submodule
+-r src/yolov5/requirements.txt

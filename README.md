@@ -6,7 +6,7 @@ lidar-cone-detection
 ├── example_grayscale.jpg
 ├── README.md
 └── src
-    ├── Lidar
+    ├── lidar
     │   ├── convert_rosbag_to_pcd.py
     │   ├── lidar_bag.bag
     │   ├── pcd_outputs
@@ -50,7 +50,7 @@ lidar-cone-detection
     │           ├── test_images.py
     │           ├── test_occupancygrids.py
     │           └── test_pointclouds.py
-    └── StereoCamera
+    └── stereocamera
         ├── CameraDetection.ipynb
         ├── conedataset_grayscale.yaml
         ├── conedataset.yaml

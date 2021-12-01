@@ -1,3 +1,6 @@
+# Cone detection
+Sensory data group that works with the cone detection for both stereocamera and lidar.
+## Repository structure
 ```bash
 lidar-cone-detection
 ├── example_grayscale.jpg

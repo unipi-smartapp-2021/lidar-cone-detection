@@ -14,7 +14,7 @@ def parse_arguments(known=False):
                         help='path where the dataset is going to be stored')
     parser.add_argument('--m', type=str, default="move", help='move or copy the dataset')
     parser.add_argument('--grayscale', type=bool, default=False, help='convert the dataset images to grayscale')
-    parser.add_argument('--split', type=list, default=[0.8, 0.1, 0.1],
+    parser.add_argument('--split', nargs='+', type=float, default=[0.8, 0.1, 0.1],
                         help='split the dataset into training, validation and test sets')
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
@@ -65,7 +65,6 @@ def write_image_file(file_path: str, dataset: list) -> None:
 
 
 if __name__ == "__main__":
-
     opt_parser = parse_arguments()
     source = opt_parser.dataset
     target = opt_parser.path

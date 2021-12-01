@@ -1,10 +1,10 @@
 # For the camera cone detection work
-cv2
+opencv-python
 tqdm
 numpy
 py7zr
-glob
-zipfile
+glob2
+zipfile36
 
 # For the lidar cone detection work
 py3rosmsgs

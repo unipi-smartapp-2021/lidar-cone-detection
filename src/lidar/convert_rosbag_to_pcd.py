@@ -17,8 +17,9 @@ def convert_pc_msg_to_np(pc_msg):
 
     # Conversion from PointCloud2 msg to np array.
     pc_np = ros_numpy.point_cloud2.pointcloud2_to_xyz_array(pc_msg, remove_nans=True)
-    pc_np = np.asarray(
-        list(filter(lambda x: ~(-90 < x[0] < -10) and (-0.15 < x[2] < 0.90), pc_np)))  # Cutting the view between 120°
+
+    # Cut the view between 120°
+    pc_np = np.asarray(list(filter(lambda x: ~(-90 < x[0] < -10) and (-0.15 < x[2] < 0.90), pc_np)))
     pcd_obj = pypcd.make_xyz_point_cloud(pc_np)
     return pc_np, pcd_obj  # point cloud in numpy and pcd format
 

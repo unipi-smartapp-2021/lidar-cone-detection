@@ -1,5 +1,5 @@
-# lidar-cone-detection
-Sensory data group that works with the lidar cone detection.
+# StereoCamera cone detection
+This subdirectory is arranged to host the stereocamera cone detection.
 ## Setup
 _**It's higly recommended to take a look at the notebook for a better understanding of the workflow.**_
 ### Repositories and requirements

@@ -1,7 +1,9 @@
+# General imports
+Pillow
+python-time
+torch
+
 # For the camera cone detection work
-opencv-python
-tqdm
-numpy
 py7zr
 glob2
 zipfile36
@@ -14,5 +16,5 @@ pptk
 roslz4 --extra-index-url https://rospypi.github.io/simple/
 --extra-index-url https://rospypi.github.io/simple/ rospy rosbag
 
-# Install othe requirements for yolov5 directly from the submodule
--r src/yolov5/requirements.txt
+# Install other requirements for yolov5
+-r https://raw.githubusercontent.com/ultralytics/yolov5/master/requirements.txt

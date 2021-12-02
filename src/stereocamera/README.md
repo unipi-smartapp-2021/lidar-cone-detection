@@ -1,5 +1,6 @@
 # StereoCamera cone detection
 This subdirectory is arranged to host the stereocamera cone detection.
+![Camera detection](camera_detection.jpg "Detection")
 ## Setup
 _**It's higly recommended to take a look at the notebook for a better understanding of the workflow.**_
 ### Repositories and requirements

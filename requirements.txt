@@ -13,6 +13,7 @@ zipfile36
 
 # For the lidar cone detection work
 py3rosmsgs
+tarfile
 open3d
 pypcd
 pptk

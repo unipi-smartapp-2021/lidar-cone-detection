@@ -2,6 +2,7 @@ from ros_numpy.src import ros_numpy
 from tqdm import tqdm
 import rosbag
 import numpy as np
+import os
 import argparse
 from pypcd import pypcd
 
@@ -41,6 +42,9 @@ if __name__ == "__main__":
     bag_file__path = opt_parser.rosbag
     pcd_output_path = opt_parser.path
     save_with_method = opt_parser.save
+    if not os.path.exists(pcd_output_path):
+        os.mkdir(pcd_output_path)
+    
     i = 0
     bag = [msg for msg in rosbag.Bag(bag_file__path).read_messages()]
     for topic, msg, t in tqdm(bag):

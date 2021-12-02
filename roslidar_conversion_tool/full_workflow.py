@@ -1,10 +1,11 @@
 import numpy as np
 from PIL import Image
 import open3d as o3d
+import matplotlib.pyplot as plt
+
 from utils import *
 
 out_arr = read_pcd_and_filter("./pcd_outputs/cloud1.pcd")
-
 """Convert from X,Y,Z to spherical coordinates"""
 az, el, r = cart2sph(out_arr[:, 1], out_arr[:, 2], out_arr[:, 0]) #convert to spherical coordinate
 

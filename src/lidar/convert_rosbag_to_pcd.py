@@ -30,7 +30,7 @@ def parse_arguments(known=False):
     parser.add_argument('--rosbag', type=str, default="", help='dataset_bag.bag path')
     parser.add_argument('--path', type=str, default="src/lidar/datasets",
                         help='path where the pointclouds are going to be stored')
-    parser.add_argument('--save', type=str, default=False, help='save with built-in method')
+    parser.add_argument('--save', action='store_true', help='save with built-in method')
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 

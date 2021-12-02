@@ -16,6 +16,7 @@ py3rosmsgs
 open3d
 pypcd
 pptk
+rospkg
 roslz4 --extra-index-url https://rospypi.github.io/simple/
 --extra-index-url https://rospypi.github.io/simple/ rospy rosbag
 

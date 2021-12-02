@@ -1,0 +1,23 @@
+# General imports
+Pillow
+pandas
+tqdm
+numpy
+python-time
+torch
+
+# For the camera cone detection work
+py7zr
+glob2
+zipfile36
+
+# For the lidar cone detection work
+py3rosmsgs
+open3d
+pypcd
+pptk
+roslz4 --extra-index-url https://rospypi.github.io/simple/
+--extra-index-url https://rospypi.github.io/simple/ rospy rosbag
+
+# Install other requirements for yolov5
+-r https://raw.githubusercontent.com/ultralytics/yolov5/master/requirements.txt

@@ -16,8 +16,8 @@ lidar-cone-detection
     │   └── ros_numpy
     │       └── ...
     └── stereocamera
-        ├── CameraDetection.ipynb
-        ├── conedataset_grayscale.yaml
-        ├── conedataset.yaml
+        ├── camera_cone_detection.ipynb
+        ├── conedataset_lidar.yaml
+        ├── conedataset_camera.yaml
         └── README.md
 ```

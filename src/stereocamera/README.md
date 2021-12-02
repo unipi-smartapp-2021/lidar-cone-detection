@@ -62,7 +62,7 @@ The weights should be in /runs/train/exp/weights if you just did the training, o
 ```python
 python yolov5/detect.py --weights best.pt --img 640 --conf 0.5 --source path/to/your_image.png
 ```
-Save the results by using ```--project runs/detect```, you can also use the following arguments:
+Save the results by using ```--project runs/detect```, you can also use the following arguments (those can be used even for the evaluation task):
 - _--save-txt_, save the labels (useful to locate the cones).
 - _--nosave_, don't save the labeled image.
 - _--exist-ok_, to use the same directory for the results.
@@ -74,6 +74,6 @@ Save the results by using ```--project runs/detect```, you can also use the foll
 You can also try to inference on your model by using it from the pytorch hub, for more details follow this guide https://github.com/ultralytics/yolov5/issues/36.
 ```python
 import torch
-model = torch.hub.load('ultralytics/yolov5', 'custom', path=your_weights)  # 
+model = torch.hub.load('ultralytics/yolov5', 'custom', path=your_weights)
 results = model(path_to_image)
 ```

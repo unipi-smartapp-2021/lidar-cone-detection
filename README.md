@@ -17,7 +17,7 @@ lidar-cone-detection
     │       └── ...
     └── stereocamera
         ├── camera_cone_detection.ipynb
-        ├── conedataset_grayscale.yaml
-        ├── conedataset.yaml
+        ├── conedataset_lidar.yaml
+        ├── conedataset_camera.yaml
         └── README.md
 ```

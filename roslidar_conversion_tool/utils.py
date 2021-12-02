@@ -35,8 +35,8 @@ def visualize_cartesian(arr):
     """It save the numpy array into a Point cloud and visualize it"""
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(arr)
-    o3d.io.write_point_cloud("./sync.ply", pcd)
-    pcd_load = o3d.io.read_point_cloud("./sync.ply")
+    o3d.io.write_point_cloud("./sync.pcd", pcd, write_ascii=True)
+    pcd_load = o3d.io.read_point_cloud("./sync.pcd")
     o3d.visualization.draw_geometries([pcd_load])
 
 
@@ -44,15 +44,13 @@ def save_numpy_as_pcd(arr, file_path):
     """From numpy array X,Y,Z save it as pcd file"""
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(arr)
-    o3d.io.write_point_cloud(file_path, pcd)
+    o3d.io.write_point_cloud(file_path, pcd, write_ascii=True)
 
 
 def visualize_pcd_file(file_path):
     """From .pcd file visualize it in a 3D view"""
     pcd_load = o3d.io.read_point_cloud(file_path)
     o3d.visualization.draw_geometries([pcd_load])
-
-
 
 
 def cart2sph(x, y, z):

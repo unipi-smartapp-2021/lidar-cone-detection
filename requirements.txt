@@ -1,5 +1,8 @@
 # General imports
 Pillow
+pandas
+tqdm
+numpy
 python-time
 torch
 

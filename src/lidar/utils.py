@@ -73,20 +73,32 @@ def sph2cart(az, el, r):
     return x, y, z
 
 
-def scale(min_max, data):
-    """Method to scale in a specific range of values trought minmax scaling"""
-    min = np.min(data)
-    max = np.max(data)
+
+def min_max_scale(min_max, data, max=None, min=None):
+    """
+    Method to scale in a specific range of values trought minmax scaling
+    :param min_max: tuple (min, max)  describing the final min e max of the scaled data
+    :param data: np.array to scale
+    :param min: Optional. Set a minimum value instead of getting it from data
+    :param max: Optional. Set a minimum value instead of getting it from data
+    :return:
+    """
+    if min is None:
+        min = np.min(data)
+    if max is None:
+        max = np.max(data)
+
     data_std = ((data - min) / (max - min))
     data_scaled = data_std * (min_max[1]-min_max[0]) + min_max[0]
     return data_scaled, (min, max)
 
 
-def read_pcd_and_filter(path):
+def read_pcd_and_filter(path, front_cut=True):
     """Read the pcd file and filter by x values and height values."""
     cloud = o3d.io.read_point_cloud(path) # Read the point cloud file
     out_arr = np.asarray(cloud.points)
-    out_arr = np.asarray(list(filter(lambda x: (0 < x[0] < 40) and (-0.5 < x[2] < 0.90), out_arr)))
+    if front_cut:
+        out_arr = np.asarray(list(filter(lambda x: (0 < x[0] < 40) and (-0.5 < x[2] < 0.90), out_arr)))
     return out_arr
 
 
@@ -99,6 +111,7 @@ def create_image(img_size, r, az, el, output_path='a.png'):
     for i in range(r.shape[0]):
         image[el[i], az[i]] = r[i]
     cv2.imwrite(output_path, image)
+    return image
 
 
 def read_spherical_image(path):
@@ -119,28 +132,37 @@ def read_minmax_file(path):
     return (float(values[0]), float(values[1])), (float(values[2]), float(values[3])), (float(values[4]), float(values[5]))
 
 
-def from_pcd_to_image(pcd_file_path, img_path, img_name):
-    """Method to convert a .pcd file to an image with the metadata file contanining the min and max
-    for r,az,el"""
-    out_arr = read_pcd_and_filter(pcd_file_path)
+def from_pcd_to_image(pcd_file_path, img_out_path, img_name, img_size = (400,600), front_cut=True):
+    """
+    Method to convert a .pcd file to an image with the metadata file contanining the min and max
+    for r,az,el
+    :param pcd_file_path:
+    :param img_out_path:
+    :param img_name:
+    :param img_size: tuple (img_width, img_height)
+    :return:
+    """
+    out_arr = read_pcd_and_filter(pcd_file_path, front_cut)
 
     """Convert from X,Y,Z to spherical coordinates"""
     az, el, r = cart2sph(out_arr[:, 1], out_arr[:, 2], out_arr[:, 0])  # convert to spherical coordinate
-
-    widht = 400
-    height = 600
+    not_scaled_polar = az, el, r
+    width = img_size[1]
+    height = img_size[0]
 
     """Scale between widht and height"""
-    r, r_minmax = scale((0, 255), r)
-    az, az_minmax = scale((0, height), az)
-    el, el_minmax = scale((0, widht), el)
-
+    r, r_minmax = min_max_scale((0, 255), r)
+    az, az_minmax = min_max_scale((0, height), az)
+    el, el_minmax = min_max_scale((0, width), el)
+    scaled_polar = az, el, r
     """Save minumum in file"""
-    f = open(img_path+img_name.split(".")[0]+"_minmax.txt", "w")
+    f = open(img_out_path + img_name.split(".")[0] + "_minmax.txt", "w")
     f.write(str(r_minmax[0])+" "+str(r_minmax[1]))
     f.write(" "+str(az_minmax[0])+" "+str(az_minmax[1]))
     f.write(" "+str(el_minmax[0]) + " " + str(el_minmax[1]))
     f.close()
 
     """Create the image"""
-    create_image((widht, height), r, az, el, img_path+img_name)
+    image = create_image((width, height), r, az, el, img_out_path + img_name)
+
+    return image, out_arr, not_scaled_polar, scaled_polar

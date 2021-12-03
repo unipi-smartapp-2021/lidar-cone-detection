@@ -6,7 +6,6 @@ Sensory data group that works with the cone detection for both stereocamera and 
 ├── 📄README.md
 ├── 📄requirements.txt
 └── 📂src
-    ├── 📄cone_detection.py
     ├── 📂datasets
     │   ├── 📂example_dataset
     │   │   ├── 📂images
@@ -19,12 +18,8 @@ Sensory data group that works with the cone detection for both stereocamera and 
     │   ├── 📄convert_rosbag_to_pcd.py
     │   ├── 📄full_workflow.py
     │   ├── 📄img2pcd.py
-    │   ├── 📄lidar_bag.bag
     │   ├── 📄lidar_cone_detection.ipynb
     │   ├── 📄pcd2img.py
-    │   ├── 📂pcd_outputs
-    │   │   ├── 📄cloud0.pcd
-    │   │   └── 📄...
     │   ├── 📄README.md
     │   ├── 📕ros_numpy
     │   └── 📄utils.py

@@ -1,18 +1,18 @@
 import argparse
 import sys
-
-import numpy as np
-from PIL import Image
-import open3d as o3d
 from utils import *
 
 
 def parse_arguments(known=False):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--image_folder', type=str, default="", help='the path where the images and metadata minmax files are stored')
-    parser.add_argument('--filename_name', type=str, default="", help='the name of the image with extension es img.png')
-    parser.add_argument('--output', type=str, default=".", help='path file where the pointcloud is going to be stored es ./pcds/cloud.pcd')
-    parser.add_argument('--visualize', type=bool, default=False, help='visualize the output in a 3D space')
+    parser.add_argument('--image_folder', type=str, default="",
+                        help='the path where the images and metadata minmax files are stored')
+    parser.add_argument('--filename_name', type=str, default="",
+                        help='the name of the image with extension es img.png')
+    parser.add_argument('--output', type=str, default=".",
+                        help='path file where the pointcloud is going to be stored es ./pcds/cloud.pcd')
+    parser.add_argument('--visualize', type=bool, default=False,
+                        help='visualize the output in a 3D space')
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 
@@ -44,4 +44,3 @@ if __name__ == "__main__":
     save_numpy_as_pcd(cloud, output__path)
     if opt_parser.visualize:
         visualize_pcd_file(output__path)
-

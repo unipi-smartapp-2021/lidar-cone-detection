@@ -20,7 +20,7 @@ def parse_arguments(known=False):
     return opt
 
 
-def convert_to_grayscale(images_list, dataset_path) -> None:
+def convert_to_grayscale(images_list: list, dataset_path: str) -> None:
     # Convert images ro grayscale
     for image in tqdm(images_list):
         img = cv2.imread(image)

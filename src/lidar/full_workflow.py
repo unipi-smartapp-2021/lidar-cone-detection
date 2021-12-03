@@ -1,40 +1,48 @@
-import numpy as np
-from PIL import Image
-import open3d as o3d
-import matplotlib.pyplot as plt
-
+import argparse
 from utils import *
 
-out_arr = read_pcd_and_filter("./pcd_outputs/cloud1.pcd")
-"""Convert from X,Y,Z to spherical coordinates"""
-az, el, r = cart2sph(out_arr[:, 1], out_arr[:, 2], out_arr[:, 0]) #convert to spherical coordinate
 
-widht = 400
-height = 600
+def parse_arguments(known=False):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--pcd_path', type=str, default="", help='pcd that need to be converted')
+    parser.add_argument('--image_path', type=str, default="img.png", help='where to save the image')
+    parser.add_argument('--w', type=int, default=400, help='image width')
+    parser.add_argument('--h', type=int, default=600, help='image height')
+    parser.add_argument('--show', action='store_true', help='show the pcd')
+    opt = parser.parse_known_args()[0] if known else parser.parse_args()
+    return opt
 
-"""Scale between widht and height"""
-r, r_minmax = scale((0, 255), r)
-az, az_minmax = scale((0, height), az)
-el, el_minmax = scale((0, widht), el)
 
-"""plt.scatter(x=el, y=az, c=r, cmap='viridis', s=5)
-plt.show()"""
+if __name__ == "__main__":
+    opt_parser = parse_arguments()
+    out_arr = read_pcd_and_filter(opt_parser.pcd_path)
 
-"""Create the image"""
-create_image((widht, height), r, az, el, "img.png")
+    # Convert from X,Y,Z to spherical coordinates
+    az, el, r = cart2sph(out_arr[:, 1], out_arr[:, 2], out_arr[:, 0])
 
-"""Read back the image"""
-r, el, az = read_spherical_image("img.png")
+    widht = opt_parser.w
+    height = opt_parser.h
 
-"""Rescale back"""
-r, _, = scale(r_minmax, r)
-az, _, = scale(az_minmax, az)
-el, _, = scale(el_minmax, el)
+    # Scale between widht and height
+    r, r_minmax = scale((0, 255), r)
+    az, az_minmax = scale((0, height), az)
+    el, el_minmax = scale((0, widht), el)
 
-"""Convert back to Cartesian"""
-x, y, z = sph2cart(az, el, r) # convert back to cartesian
+    # Create the image
+    create_image((widht, height), r, az, el, opt_parser.image_path)
 
-"""Visualize the point cloud"""
-cloud = np.column_stack((x, y, z))
-visualize_cartesian(cloud)
+    # Read back the image
+    r, el, az = read_spherical_image(opt_parser.image_path)
 
+    # Rescale back
+    r, _, = scale(r_minmax, r)
+    az, _, = scale(az_minmax, az)
+    el, _, = scale(el_minmax, el)
+
+    # Convert back to Cartesian
+    x, y, z = sph2cart(az, el, r)
+
+    # Visualize the point cloud
+    if opt_parser.show:
+        cloud = np.column_stack((x, y, z))
+        visualize_cartesian(cloud)

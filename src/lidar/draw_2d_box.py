@@ -1,19 +1,22 @@
 import os
 
-from src.lidar.read_matlab_labels import read_matlab_labels
+from read_matlab_labels import *
 from utils import *
 
-out_path_labels = "gtruth_labels/"
-out_path_img = "converted_pcds/"
+out_path_labels = "T:/pcds/from1000_1100/out/" #output for the labels
+out_path_img = "T:/pcds/from1000_1100/out/" #output for the imgs
 try:
     os.mkdir(out_path_labels)
 except:
     pass
 
-source_dir = "pcd_labels/"
-source_pcd_dir = "C:/dev/lidar-labeling/pcd_outputs/"
-
-for matlab_labels in os.listdir(source_dir):
+source_dir = "T:/pcds/from1000_1100/labels/" #source with the mathlab labels
+source_pcd_dir = "T:/pcds/from1000_1100/pcd/" #source with the pcds
+pcd_names = os.listdir(source_pcd_dir)
+label_names = os.listdir(source_dir)
+# for i, name in enumerate(label_names):
+#     os.rename(source_dir+name, source_dir+(pcd_names[i].split("."))[0]+".txt")
+for i, matlab_labels in enumerate(os.listdir(source_dir)):
 
     boxes = read_matlab_labels(source_dir + matlab_labels)
 
@@ -24,7 +27,7 @@ for matlab_labels in os.listdir(source_dir):
     img_height = 400
 
     df = pd.DataFrame()
-    pcd_filename = source_pcd_dir + matlab_labels.replace(".txt", ".pcd")
+    pcd_filename = source_pcd_dir + pcd_names[i]
     print("reading ", pcd_filename)
     image, outarr, (theta, phi, r), (df["theta"], df["phi"], df["R"]) = from_pcd_to_image(pcd_filename,
                                                                                           out_path_img,
@@ -52,7 +55,7 @@ for matlab_labels in os.listdir(source_dir):
     label_file = out_path_labels + matlab_labels
     with open(label_file, "w") as fp:
         for box in boxes.iterrows():
-            x, y, z, dx, dy, dz, R, theta, phi, dR, dtheta, dphi = box[1]
+            x, y, z, dx, dy, dz, theta, phi, r, dtheta, dphi, dR = box[1]
 
             inner_points = df[df["X"].between(x, dx)]
             inner_points = inner_points[inner_points["Y"].between(y, dy)]
@@ -64,9 +67,9 @@ for matlab_labels in os.listdir(source_dir):
                   # int(inner_points.theta.min()), int(inner_points.theta.max()),  int(inner_points.phi.min()), int(inner_points.phi.max())
                   )
 
-            if (len(inner_points) > 0):
-                start_pt = (int(inner_points.theta.min()), int(inner_points.phi.min()))
-                end_pt = (int(inner_points.theta.max()), int(inner_points.phi.max()))
+            if (len(inner_points)  > 0):
+                start_pt = (int(inner_points.theta.min()), int(inner_points.phi.min())) #(int(theta), int(phi))
+                end_pt = (int(inner_points.theta.max()), int(inner_points.phi.max()))   #(int(dtheta), int(dphi))
 
                 center = (start_pt[0] + (end_pt[0] - start_pt[0]) / 2, start_pt[1] + (end_pt[1] - start_pt[1]) / 2)
                 width = abs(end_pt[0] - start_pt[0])
@@ -82,6 +85,6 @@ for matlab_labels in os.listdir(source_dir):
                 # cv2.imshow("coloringpoints", image)
                 # cv2.waitKey(0)
 
-                fp.write("0 {} {} {} {}\n".format(center[0]/img_width, center[1]/img_height, width/img_width, height/img_height))
+                fp.write("0 {} {} {} {}\n".format(round(center[0]/img_width, 4), round(center[1]/img_height,4), round(width/img_width,4), round(height/img_height),4))
         cv2.imwrite(out_path_img + matlab_labels.replace(".txt", "_box.png"), image)
         fp.close()

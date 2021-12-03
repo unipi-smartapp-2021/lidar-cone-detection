@@ -32,9 +32,9 @@ if __name__ == "__main__":
     r_minmax, az_minmax, el_minmax = read_minmax_file(img_file__path+(image_name.split(".")[0])+"_minmax.txt")
 
     """Rescale back"""
-    r, _, = scale(r_minmax, r)
-    az, _, = scale(az_minmax, az)
-    el, _, = scale(el_minmax, el)
+    r, _, = min_max_scale(r_minmax, r)
+    az, _, = min_max_scale(az_minmax, az)
+    el, _, = min_max_scale(el_minmax, el)
 
     """Convert back to Cartesian"""
     x, y, z = sph2cart(az, el, r) # convert back to cartesian

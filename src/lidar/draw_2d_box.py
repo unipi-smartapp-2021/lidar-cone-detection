@@ -1,26 +1,7 @@
 import os
 
-import cv2
-import open3d as o3d
-import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
-
+from src.lidar.read_matlab_labels import read_matlab_labels
 from utils import *
-
-
-def read_matlab_labels(label_file):
-    boxes = pd.read_csv(label_file, delim_whitespace=True, header=None)
-    boxes.columns = ["x", "y", "z", "dx", "dy", "dz"]
-    boxes.x = boxes.x - boxes.dx / 2
-    boxes.y = boxes.y - boxes.dy / 2
-    boxes.z = boxes.z - boxes.dz / 2
-    boxes.dx = boxes.x + boxes.dx
-    boxes.dy = boxes.y + boxes.dy
-    boxes.dz = boxes.z + boxes.dz
-
-    return boxes
-
 
 out_path_labels = "gtruth_labels/"
 out_path_img = "converted_pcds/"
@@ -31,6 +12,7 @@ except:
 
 source_dir = "pcd_labels/"
 source_pcd_dir = "C:/dev/lidar-labeling/pcd_outputs/"
+
 for matlab_labels in os.listdir(source_dir):
 
     boxes = read_matlab_labels(source_dir + matlab_labels)
@@ -100,6 +82,6 @@ for matlab_labels in os.listdir(source_dir):
                 # cv2.imshow("coloringpoints", image)
                 # cv2.waitKey(0)
 
-                fp.write("0 {} {} {} {}\n".format(center[0], center[1], width, height))
+                fp.write("0 {} {} {} {}\n".format(center[0]/img_width, center[1]/img_height, width/img_width, height/img_height))
         cv2.imwrite(out_path_img + matlab_labels.replace(".txt", "_box.png"), image)
         fp.close()

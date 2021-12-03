@@ -13,9 +13,9 @@ widht = 400
 height = 600
 
 """Scale between widht and height"""
-r, r_minmax = scale((0, 255), r)
-az, az_minmax = scale((0, height), az)
-el, el_minmax = scale((0, widht), el)
+r, r_minmax = min_max_scale((0, 255), r)
+az, az_minmax = min_max_scale((0, height), az)
+el, el_minmax = min_max_scale((0, widht), el)
 
 """plt.scatter(x=el, y=az, c=r, cmap='viridis', s=5)
 plt.show()"""
@@ -27,9 +27,9 @@ create_image((widht, height), r, az, el, "img.png")
 r, el, az = read_spherical_image("img.png")
 
 """Rescale back"""
-r, _, = scale(r_minmax, r)
-az, _, = scale(az_minmax, az)
-el, _, = scale(el_minmax, el)
+r, _, = min_max_scale(r_minmax, r)
+az, _, = min_max_scale(az_minmax, az)
+el, _, = min_max_scale(el_minmax, el)
 
 """Convert back to Cartesian"""
 x, y, z = sph2cart(az, el, r) # convert back to cartesian

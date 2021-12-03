@@ -12,7 +12,7 @@ def parse_arguments(known=False):
     parser.add_argument('--dataset', type=str, default="", help='dataset path')
     parser.add_argument('--path', type=str, default="datasets/",
                         help='path where the dataset is going to be stored')
-    parser.add_argument('--m', type=str, default="move", help='move or copy the dataset')
+    parser.add_argument('--copy', action='store_true', help="copy the dataset, if not defined the command will move it")
     parser.add_argument('--grayscale', action='store_true', help='convert the dataset images to grayscale')
     parser.add_argument('--split', nargs='+', type=float, default=[0.8, 0.1, 0.1],
                         help='split the dataset into training, validation and test sets')
@@ -78,17 +78,21 @@ if __name__ == "__main__":
 
     # Move or copy each file from the previous path
     for file_name in file_names:
+        target_file = None
         if file_name.endswith(".jpg") or file_name.endswith(".png"):
             target_file = target + "/images"
-        else:
+        elif "minmax" in file_name:
+            shutil.move("/content/mini_ds/" + file_name, "/content/minmax_folder2/" + file_name)
+        elif file_name.endswith(".txt"):
             target_file = target + "/labels"
 
-        if opt_parser.m == "move":
-            shutil.move(os.path.join(source, file_name), target_file)
-        elif opt_parser.m == "copy":
-            shutil.copy(os.path.join(source, file_name), target_file)
-        else:
-            raise ValueError("Passed an incorrect value for the --m argument, use \"move\" or \"copy\"")
+        if target_file is not None:
+            if opt_parser.m == "move":
+                shutil.move(os.path.join(source, file_name), target_file)
+            elif opt_parser.m == "copy":
+                shutil.copy(os.path.join(source, file_name), target_file)
+            else:
+                raise ValueError("Passed an incorrect value for the --m argument, use \"move\" or \"copy\"")
 
     images = glob(target+"/images/*.jpg")
 

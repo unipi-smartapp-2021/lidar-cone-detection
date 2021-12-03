@@ -85,6 +85,6 @@ for i, matlab_labels in enumerate(os.listdir(source_dir)):
                 # cv2.imshow("coloringpoints", image)
                 # cv2.waitKey(0)
 
-                fp.write("0 {} {} {} {}\n".format(round(center[0]/img_width, 4), round(center[1]/img_height,4), round(width/img_width,4), round(height/img_height),4))
-        cv2.imwrite(out_path_img + matlab_labels.replace(".txt", "_box.png"), image)
+                fp.write("0 {} {} {} {}\n".format(round(center[0]/img_width, 4), round(center[1]/img_height,4), round(width/img_width,4), height/img_height))
+        # cv2.imwrite(out_path_img + matlab_labels.replace(".txt", "_box.png"), image)
         fp.close()

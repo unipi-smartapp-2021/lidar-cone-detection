@@ -5,11 +5,8 @@ tqdm
 numpy
 python-time
 torch
-
-# For the camera cone detection work
 py7zr
-glob2
-zipfile36
+matplotlib
 
 # For the lidar cone detection work
 py3rosmsgs

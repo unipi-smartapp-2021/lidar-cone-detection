@@ -17,6 +17,7 @@ if __name__ == "__main__":
     if len(sys.argv) <= 5:
         print("Please insert the --input, --image_name and --output arguments")
         exit(0)
+
     pcd_file__path = opt_parser.pcd_file
     image_name = opt_parser.image_name
     output__path = opt_parser.output

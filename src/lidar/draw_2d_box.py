@@ -3,17 +3,19 @@ import os
 from read_matlab_labels import *
 from utils import *
 
-out_path_labels = "T:/pcds/from1000_1100/out/" #output for the labels
-out_path_img = "T:/pcds/from1000_1100/out/" #output for the imgs
+foldername = "from900_1000"
+out_path_labels = "T:/pcds/"+foldername+"/out/" #output for the labels
+out_path_img = "T:/pcds/"+foldername+"/out/" #output for the imgs
 try:
     os.mkdir(out_path_labels)
 except:
     pass
 
-source_dir = "T:/pcds/from1000_1100/labels/" #source with the mathlab labels
-source_pcd_dir = "T:/pcds/from1000_1100/pcd/" #source with the pcds
+source_dir = "T:/pcds/"+foldername+"/labels/"  #source with the mathlab labels
+source_pcd_dir = "T:/pcds/"+foldername+"/pcd/" #source with the pcds
 pcd_names = os.listdir(source_pcd_dir)
 label_names = os.listdir(source_dir)
+minimum_inner_points = 0
 # for i, name in enumerate(label_names):
 #     os.rename(source_dir+name, source_dir+(pcd_names[i].split("."))[0]+".txt")
 for i, matlab_labels in enumerate(os.listdir(source_dir)):
@@ -23,8 +25,8 @@ for i, matlab_labels in enumerate(os.listdir(source_dir)):
     boxes['theta'], boxes['phi'], boxes['R'] = cart2sph(boxes.y.values, boxes.z.values, boxes.x.values)
     boxes['dtheta'], boxes['dphi'], boxes['dR'] = cart2sph(boxes.dy.values, boxes.dz.values, boxes.dx.values)
 
-    img_width = 600
-    img_height = 400
+    img_width = 480
+    img_height = 480
 
     df = pd.DataFrame()
     pcd_filename = source_pcd_dir + pcd_names[i]
@@ -41,11 +43,11 @@ for i, matlab_labels in enumerate(os.listdir(source_dir)):
     boxes['R'], minmax = min_max_scale((0, 255), boxes['R'], r.max(), r.min())
     boxes['dR'], minmax = min_max_scale((0, 255), boxes['dR'], r.max(), r.min())
 
-    boxes['theta'], minmax = min_max_scale((0, img_width), boxes['theta'], theta.max(), theta.min())
-    boxes['dtheta'], minmax = min_max_scale((0, img_width), boxes['dtheta'], theta.max(), theta.min())
+    boxes['theta'], minmax = min_max_scale((0, img_width-1), boxes['theta'], theta.max(), theta.min())
+    boxes['dtheta'], minmax = min_max_scale((0, img_width-1), boxes['dtheta'], theta.max(), theta.min())
 
-    boxes['phi'], minmax = min_max_scale((0, img_height), boxes['phi'], phi.max(), phi.min())
-    boxes['dphi'], minmax = min_max_scale((0, img_height), boxes['dphi'], phi.max(), phi.min())
+    boxes['phi'], minmax = min_max_scale((0, img_height-1), boxes['phi'], phi.max(), phi.min())
+    boxes['dphi'], minmax = min_max_scale((0, img_height-1), boxes['dphi'], phi.max(), phi.min())
     #
     # fig = df.plot.scatter(x='theta', y='phi', c='R', colormap='gray', s=1)
     # boxes.plot.scatter(x='theta', y='phi', c='#00FF00', s=10, ax = fig)
@@ -67,7 +69,7 @@ for i, matlab_labels in enumerate(os.listdir(source_dir)):
                   # int(inner_points.theta.min()), int(inner_points.theta.max()),  int(inner_points.phi.min()), int(inner_points.phi.max())
                   )
 
-            if (len(inner_points)  > 0):
+            if len(inner_points)  > minimum_inner_points:
                 start_pt = (int(inner_points.theta.min()), int(inner_points.phi.min())) #(int(theta), int(phi))
                 end_pt = (int(inner_points.theta.max()), int(inner_points.phi.max()))   #(int(dtheta), int(dphi))
 

@@ -104,7 +104,7 @@ def read_pcd_and_filter(path, front_cut=True):
 
 def create_image(img_size, r, az, el, output_path='a.png'):
     """Create an image from r, azimuth and elevation"""
-    image = np.ones([img_size[0] + 1, img_size[1] + 1, 1], np.uint8) * 255
+    image = np.ones([img_size[0], img_size[1], 1], np.uint8) * 255
     r = r.astype(int)
     az = az.astype(int)
     el = el.astype(int)
@@ -152,8 +152,8 @@ def from_pcd_to_image(pcd_file_path, img_out_path, img_name, img_size = (400,600
 
     """Scale between widht and height"""
     r, r_minmax = min_max_scale((0, 255), r)
-    az, az_minmax = min_max_scale((0, height), az)
-    el, el_minmax = min_max_scale((0, width), el)
+    az, az_minmax = min_max_scale((0, height-1), az)
+    el, el_minmax = min_max_scale((0, width-1), el)
     scaled_polar = az, el, r
     """Save minumum in file"""
     f = open(img_out_path + img_name.split(".")[0] + "_minmax.txt", "w")

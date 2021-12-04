@@ -42,7 +42,7 @@ def split_set(dataset: list,
               val: float = 0.1,
               ts: float = 0.1,
               shuffle: bool = True) -> (list, list, list):
-    if tr+val+ts != 1:
+    if tr + val + ts != 1:
         raise ValueError("Train, validation and test partition not allowed with such splits")
 
     dataset_size = len(dataset)
@@ -82,19 +82,20 @@ if __name__ == "__main__":
         if file_name.endswith(".jpg") or file_name.endswith(".png"):
             target_file = target + "/images"
         elif "minmax" in file_name:
-            shutil.move("/content/mini_ds/" + file_name, "/content/minmax_folder2/" + file_name)
+            if not os.path.exists("dataset_minmax"):
+                os.mkdir("dataset_minmax")
+
+            shutil.move(os.path.join(source, file_name), "dataset_minmax/" + file_name)
         elif file_name.endswith(".txt"):
             target_file = target + "/labels"
 
         if target_file is not None:
-            if opt_parser.m == "move":
-                shutil.move(os.path.join(source, file_name), target_file)
-            elif opt_parser.m == "copy":
+            if opt_parser.copy:
                 shutil.copy(os.path.join(source, file_name), target_file)
             else:
-                raise ValueError("Passed an incorrect value for the --m argument, use \"move\" or \"copy\"")
+                shutil.move(os.path.join(source, file_name), target_file)
 
-    images = glob(target+"/images/*.jpg")
+    images = glob(target + "/images/*")
 
     # Convert images to grayscale and fix the labels
     if opt_parser.grayscale:

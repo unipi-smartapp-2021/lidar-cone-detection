@@ -3,7 +3,7 @@ import os
 from read_matlab_labels import *
 from utils import *
 
-foldername = "from900_1000"
+foldername = "post_proc"
 out_path_labels = "T:/pcds/"+foldername+"/out/" #output for the labels
 out_path_img = "T:/pcds/"+foldername+"/out/" #output for the imgs
 try:
@@ -70,23 +70,24 @@ for i, matlab_labels in enumerate(os.listdir(source_dir)):
                   )
 
             if len(inner_points)  > minimum_inner_points:
-                start_pt = (int(inner_points.theta.min()), int(inner_points.phi.min())) #(int(theta), int(phi))
-                end_pt = (int(inner_points.theta.max()), int(inner_points.phi.max()))   #(int(dtheta), int(dphi))
+                start_pt = ((inner_points.theta.min()), (inner_points.phi.min())) #(int(theta), int(phi))
+                end_pt = ((inner_points.theta.max()), (inner_points.phi.max()))   #(int(dtheta), int(dphi))
 
                 center = (start_pt[0] + (end_pt[0] - start_pt[0]) / 2, start_pt[1] + (end_pt[1] - start_pt[1]) / 2)
                 width = abs(end_pt[0] - start_pt[0])
                 height = abs(end_pt[1] - start_pt[1])
 
                 # print("drawing", int(inner_points.theta.min()), int(inner_points.theta.max()),  int(inner_points.phi.min()), int(inner_points.phi.max()))
-                image = cv2.rectangle(
+                """image = cv2.rectangle(
                     img=image,
                     pt1=start_pt,
                     pt2=end_pt,
                     color=(0, 0, 255),
-                    thickness=1)
+                    thickness=1)"""
                 # cv2.imshow("coloringpoints", image)
                 # cv2.waitKey(0)
 
-                fp.write("0 {} {} {} {}\n".format(round(center[0]/img_width, 4), round(center[1]/img_height,4), round(width/img_width,4), height/img_height))
-        # cv2.imwrite(out_path_img + matlab_labels.replace(".txt", "_box.png"), image)
+                fp.write("0 {} {} {} {}\n".format(round(center[0]/img_width, 4), round(center[1]/img_height,4), round(width/img_width,4), round(height/img_height),4))
+                # fp.write("{},{},{},{}\n".format(round(start_pt[0], 4), round(start_pt[1],4), round(end_pt[0],4), round(end_pt[1],4)))
+        cv2.imwrite(out_path_img + matlab_labels.replace(".txt", "_box.png"), image)
         fp.close()

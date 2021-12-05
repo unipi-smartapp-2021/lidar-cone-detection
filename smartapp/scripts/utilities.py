@@ -101,7 +101,7 @@ def from_matrix_to_image(matrix : np.ndarray, img_path='./lidar_out_parsed/', im
     """Method to convert a .pcd file to an image with the metadata file contanining the min and max
     for r,az,el"""
     out_arr = matrix #read_pcd_and_filter(pcd_file_path)
-    out_arr = np.asarray(list(filter(lambda x: (0 < x[0] < 40) and (-0.5 < x[2] < 0.90), out_arr)))
+    out_arr = np.asarray(list(filter(lambda x: (-0.5 < x[2] < 0.90), out_arr)))
 
     """Convert from X,Y,Z to spherical coordinates"""
     az, el, r = cart2sph(out_arr[:, 1], out_arr[:, 2], out_arr[:, 0])  # convert to spherical coordinate

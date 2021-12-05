@@ -5,8 +5,22 @@ Sensory data group that works with the cone detection for both stereocamera and 
 📂lidar-cone-detection
 ├── 📄README.md
 ├── 📄requirements.txt
+├── 📂smartapp
+│   ├── 📄CMakeLists.txt
+│   ├── 📄package.xml
+│   ├── 📂scripts
+│   │   ├── 📂cameras
+│   │   │   └── 📄image0.jpg
+│   │   ├── 📄camera_weights.pt
+│   │   ├── 📂lidars
+│   │   │   └── 📄image0.jpg
+│   │   ├── 📄lidar_weights.pt
+│   │   ├── 📄subscriber_lidar.py
+│   │   ├── 📄subscriber_rgb_camera.py
+│   │   └── 📄utilities.py
+│   └── 📄setup.py
 └── 📂src
-    ├── 📂datasets
+    ├─ 📂datasets
     │   ├── 📂example_dataset
     │   │   ├── 📂images
     │   │   │   └── 📄example_image.jpg
@@ -19,6 +33,7 @@ Sensory data group that works with the cone detection for both stereocamera and 
     │   ├── 📄full_workflow.py
     │   ├── 📄img2pcd.py
     │   ├── 📄lidar_cone_detection.ipynb
+    │   ├── 📄lidar_weights.pt
     │   ├── 📄pcd2img.py
     │   ├── 📄README.md
     │   ├── 📕ros_numpy

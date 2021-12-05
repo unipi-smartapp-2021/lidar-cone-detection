@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image
-#import open3d as o3d
+import open3d as o3d
 #import pandas as pd
 import cv2
 """
@@ -17,12 +17,12 @@ managing point clouds.
     pcd_load = o3d.io.read_point_cloud("./sync.ply")
     o3d.visualization.draw_geometries([pcd_load])'''
 
-'''
+
 def save_numpy_as_pcd(arr, file_path):
     """From numpy array X,Y,Z save it as pcd file"""
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(arr)
-    o3d.io.write_point_cloud(file_path, pcd)'''
+    o3d.io.write_point_cloud(file_path, pcd)
 
 
 '''def visualize_pcd_file(file_path):
@@ -113,6 +113,13 @@ def from_matrix_to_image(matrix : np.ndarray, img_path='./lidar_out_parsed/', im
     r, r_minmax = scale((0, 255), r) 
     az, az_minmax = scale((0, height - 1), az)
     el, el_minmax = scale((0, widht - 1), el)
+
+    """Save minumum in file"""
+    '''f = open(img_path+img_name.split(".")[0]+"_minmax.txt", "w")
+    f.write(str(r_minmax[0])+" "+str(r_minmax[1]))
+    f.write(" "+str(az_minmax[0])+" "+str(az_minmax[1]))
+    f.write(" "+str(el_minmax[0]) + " " + str(el_minmax[1]))
+    f.close()'''
 
     """Create the image"""
     img = create_image((widht, height), r, az, el)

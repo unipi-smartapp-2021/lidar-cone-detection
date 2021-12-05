@@ -18,10 +18,11 @@ import pandas
 class SubscribePointCloud(object):
     def __init__(self):
         rospy.init_node('subscribe_custom_point_cloud')
-        script_path = os.path.dirname(os.path.realpath(__file__))
-        self.model = torch.hub.load('ultralytics/yolov5', 'custom', path=script_path+'/lidar_weights.pt')
-        rospy.Subscriber('/carla/ego_vehicle/lidar', PointCloud2, self.callback)
-        self.pub = rospy.Publisher('model/lidar/output', String, queue_size=10)
+        self.script_path = os.path.dirname(os.path.realpath(__file__))
+        self.model = torch.hub.load('ultralytics/yolov5', 'custom', path=self.script_path+'/lidar_weights.pt')
+        self.model.conf = 0.4  # NMS confidence threshold
+        rospy.Subscriber('/carla/ego_vehicle/lidar', PointCloud2, self.callback, queue_size=1)
+        self.pub = rospy.Publisher('/model/lidar/output', String, queue_size=10)
         #self.talker()
         rospy.spin()
     
@@ -43,7 +44,8 @@ class SubscribePointCloud(object):
             i = i+1
 
         img_name = 'lidar_frame_out_'+ str(point_cloud.header.seq)+'.png'
-        rospy.loginfo(img_name)
+        #rospy.loginfo(img_name)
+        #save_numpy_as_pcd(m_from_lidar, './lidar_pcd.pcd')
         img = from_matrix_to_image(m_from_lidar, img_name=img_name, out_img=False)
         #cv2.imshow("Image window", img) #only for visualization purpose   
         #cv2.waitKey(1) #only for visualization purpose
@@ -54,17 +56,29 @@ class SubscribePointCloud(object):
         img:np.ndarray = self.create_image_from_lidar(point_cloud)
         #print(img.shape)
         
-        
-        #subprocess.call(['sh', script_path+ '/script.sh']) 
-        #self.talker()
         results = self.model(img)#.reshape((img.shape[0], img.shape[1])))
         ris = results.pandas().xyxy[0]
-        print(ris)
-        results.show()
+        
+        
+        #ris.to_csv(path_or_buf='./yolo_out.csv', index=False)
+        #print(ris)
+        results.save(self.script_path + '/lidars/')
+        if len(results.files)>0:
+            tmp = self.script_path + '/lidars/' + results.files[0]
+            img = cv2.imread(tmp)
+            cv2.imshow("Image window", img) #only for visualization purpose   
+            cv2.waitKey(1) #only for visualization purpose
+        else:
+            cv2.imshow("Image window", results.imgs) #only for visualization purpose   
+            cv2.waitKey(1) #only for visua
+
+        #cv2.imshow("Image window", results.imgs[0]) #only for visualization purpose   
+        #cv2.waitKey(1) #only for visualization purpose
+        
         #cv2.imshow("Image window", results) #only for visualization purpose   
         #cv2.waitKey(1) #only for visualization purpose
         self.pub.publish("hello_str")
-        time.sleep(2)
+        #time.sleep(2)
 
 
 def main():

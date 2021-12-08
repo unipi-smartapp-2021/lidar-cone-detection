@@ -3,7 +3,7 @@ import os
 from read_matlab_labels import *
 from utils import *
 
-foldername = "post_proc"
+foldername = "from500_600"
 out_path_labels = "T:/pcds/"+foldername+"/out/" #output for the labels
 out_path_img = "T:/pcds/"+foldername+"/out/" #output for the imgs
 try:

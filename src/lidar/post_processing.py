@@ -54,12 +54,13 @@ def post_processing(raw_pcd, polar_minmaxes, yolo_boxes, img_df, image_size, rma
 
     """Creating the resulting numpy array according to the output type"""
     filtered_output = np.zeros(shape=(0, OutputTypes.output_dim[output_type]))
-
+    filtered_output2 = np.zeros(shape=(0, 3))
     """Filtering all the points between the 3Dboxes"""
     for index, box in yolo_boxes.iterrows():
         cone = raw_pcd[(raw_pcd['phi'].between(left=box['phi_mins'], right=box['phi_maxs'], inclusive=True))
                        & (raw_pcd['r'].between(left=box['r_mins'], right=box['r_maxs'], inclusive=True))
                        & (raw_pcd['theta'].between(left=box['theta_mins'], right=box['theta_maxs'], inclusive=True))]
+        filtered_output2 = np.vstack([filtered_output2, cone[['X', 'Y', 'Z']].values])
         if output_type == OutputTypes.CENTER:
             cone_center = select_center(cone)
             filtered_output = np.vstack([filtered_output, cone_center])
@@ -68,7 +69,7 @@ def post_processing(raw_pcd, polar_minmaxes, yolo_boxes, img_df, image_size, rma
             filtered_output = np.vstack([filtered_output, cone_box])
         else:
             raise ValueError("select an output type")
-    return filtered_output
+    return filtered_output, filtered_output2
 
 
 def select_box(cone, first_quantile, second_quantile):
@@ -104,20 +105,24 @@ def select_center(cone):
     :return:
     """
     nparam_density = stats.kde.gaussian_kde(cone['r'].values)
-    data_space = np.linspace(cone['r'].min() - 0.5, cone['r'].max() + cone['r'].max() * .01)
+    data_space = np.linspace(cone['r'].min(), cone['r'].min() + cone['r'].max())
     evaluated = nparam_density.evaluate(data_space)
     peaks, _ = find_peaks(evaluated, height=0)
     rcenter = data_space[np.argmin(evaluated[peaks[0]])]
-    cone_center = np.array([cone['phi'].max() - cone['phi'].min(), cone['theta'].max() - cone['theta'].min(), rcenter])
+    cone = cone[cone['r'] <= rcenter]
+    cone_center = np.array(
+         [cone['X'].mean(), cone['Y'].mean(), cone['Z'].mean()])
     # print("{} {} {} ".format(row['phi_maxs']-row['phi_mins'], row['theta_maxs']-row['theta_mins'], rcenter))
     return cone_center
 
 
 """ Example """
 
-"""path = "./post_process_data/"
+path = "./post_process_data/"
 cloud = o3d.io.read_point_cloud(path+"lidar.pcd") # Read the point cloud file
 raw_pcd = pd.DataFrame(cloud.points, columns=["X", "Y", "Z"])
+print(raw_pcd.describe())
+# visualize_cartesian(raw_pcd[['X','Y','Z']].values)
 raw_pcd['theta'], raw_pcd['phi'], raw_pcd['r'] = cart2sph(raw_pcd['Y'], raw_pcd["Z"], raw_pcd['X']) #convert to spherical coordinate
 r_minmax, theta_minmax, phi_minmax = read_minmax_file(path+"lidar_minmax.txt")
 yolo_boxes = pd.read_csv(path+"lidar.csv")
@@ -125,6 +130,8 @@ yolo_boxes = pd.read_csv(path+"lidar.csv")
 img_df = pd.DataFrame()
 img_df['r'], img_df['phi'], img_df['theta'] = read_spherical_image(path+"lidar.png")
 
-array = post_processing(raw_pcd, (r_minmax, theta_minmax, phi_minmax), yolo_boxes, img_df, (480, 480), 255, OutputTypes.BOXES)
-print(array)"""
+array, visualiz = post_processing(raw_pcd, (r_minmax, theta_minmax, phi_minmax), yolo_boxes, img_df, (480, 480), 255, OutputTypes.CENTER)
+print(array)
+plt.scatter(array[:, 0], array[:, 1])
+plt.show()
 

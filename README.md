@@ -1,5 +1,5 @@
 # Cone detection
-Sensory data group that works with the cone detection for both stereocamera and lidar.
+Sensory data group that works with the cone detection for both stereocamera and lidar, the ```src``` directory is about the training and inference for the two yolov5 models, the ```smartapp``` directory contains everything needed to let our work run on the simulator.
 ## Repository structure
 ```bash
 📂lidar-cone-detection

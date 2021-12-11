@@ -8,10 +8,6 @@ Sensory data group that works with data
 ├── 📄 setup.py
 ├── 📂 src
      ├── 📂 __pycache__
-     ├── 📄 __init__.py
-     ├── 📄 post_processing.py
-     ├── 📄 utilities_back.py
-     ├── 📄 utilities.py
 ├── 📂 scripts
      ├── 📂 __pycache__
      ├── 📂 cameras

@@ -1,6 +1,6 @@
 import argparse
 import sys
-from utils import read_pcd_and_filter, cart2sph, scale, create_image, from_pcd_to_image
+from utils import read_pcd_and_filter, cart2sph, min_max_scale, create_image, from_pcd_to_image
 
 
 def parse_arguments(known=False):

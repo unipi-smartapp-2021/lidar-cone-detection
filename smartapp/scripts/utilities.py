@@ -50,6 +50,24 @@ def cart2sph(x, y, z):
     z = r * np.sin(el)
     return x, y, z'''
 
+def min_max_scale(min_max, data, max=None, min=None):
+    """
+    Method to scale in a specific range of values trought minmax scaling
+    :param min_max: tuple (min, max)  describing the final min e max of the scaled data
+    :param data: np.array to scale
+    :param min: Optional. Set a minimum value instead of getting it from data
+    :param max: Optional. Set a minimum value instead of getting it from data
+    :return:
+    """
+    if min is None:
+        min = np.min(data)
+    if max is None:
+        max = np.max(data)
+
+    data_std = ((data - min) / (max - min))
+    data_scaled = data_std * (min_max[1]-min_max[0]) + min_max[0]
+    return data_scaled, (min, max)    
+
 
 def scale(min_max, data):
     """Method to scale in a specific range of values trought minmax scaling"""
@@ -90,6 +108,14 @@ def create_image(img_size, r, az, el, output_path='a.png'):
     az = np.array(a[:, 1])
     return r, el, az'''
 
+def read_spherical_image(image_array: np.ndarray):
+    """Read the spherical image and return the r, elevation and azimuth"""
+    a = np.argwhere(image_array < 255)
+    r = np.array([image_array[ele[0], ele[1]] for ele in a])
+    el = np.array(a[:, 0])
+    az = np.array(a[:, 1])
+    return r, el, az    
+
 
 '''def read_minmax_file(path):
     """read the minmax file wich contains the previous min and max to let the conversion back to cartesian."""
@@ -106,8 +132,8 @@ def from_matrix_to_image(matrix : np.ndarray, img_path='./lidar_out_parsed/', im
     """Convert from X,Y,Z to spherical coordinates"""
     az, el, r = cart2sph(out_arr[:, 1], out_arr[:, 2], out_arr[:, 0])  # convert to spherical coordinate
 
-    widht = 400
-    height = 600
+    widht = 480
+    height = 480
 
     """Scale between widht and height"""
     r, r_minmax = scale((0, 255), r) 

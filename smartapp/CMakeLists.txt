@@ -165,7 +165,7 @@ include_directories(
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
-catkin_install_python(PROGRAMS scripts/subscriber_lidar.py scripts/subscriber_rgb_camera.py
+catkin_install_python(PROGRAMS scripts/lidar.py scripts/rgb_camera.py scripts/human_interaction.py scripts/output_fusion.py 
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

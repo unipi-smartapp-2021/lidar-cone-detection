@@ -6,6 +6,11 @@ can find different messages from different topics.
 pip install py3rosmsgs
 pip install --extra-index-url https://rospypi.github.io/simple/ rospy rosbag
 ```
+## Solve an issue from pypcd
+The pypcd package hasn't been updated in a while, if you're working on Colab use the following command to solve an issue about an import, otherwise you have to manually change ```import cStringIO as sio``` into ```from io import StringIO as sio```, then everything should work fine.
+```
+sed -i "s/import cStringIO as sio/from io import StringIO as sio/g" ../usr/local/lib/python3.7/dist-packages/pypcd/pypcd.py
+```
 ### The lidar messages
 The lidar messages coming from the topic **/carla/ego_vehicle/lidar** are
 encoded in the PointCloud2 format, where the X,Y,Z are converted in a 

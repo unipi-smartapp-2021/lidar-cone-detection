@@ -7,8 +7,9 @@ import sensor_msgs.point_cloud2 as pc2
 from rospy.numpy_msg import numpy_msg
 from std_msgs.msg import String, Float32MultiArray, MultiArrayDimension, Float32
 import os
+import argparse
 
-from sensory.utilities import min_max_scale
+from sensory.utilities import min_max_scale, convert_numpy_to_rosMultiArr
 
 
 class OutputFusion(object):
@@ -16,6 +17,7 @@ class OutputFusion(object):
         rospy.init_node('output_fusion')
         self.script_path = os.path.dirname(os.path.realpath(__file__))
         self.parsed_camera = None
+        rospy.loginfo("Ready")
         rospy.Subscriber('/model/lidar/output', Float32MultiArray, self.callback_lidar, queue_size=1)
         rospy.Subscriber('/model/camera/output', Float32MultiArray, self.callback_camera, queue_size=1)
         self.pub = rospy.Publisher('/sensor_fusion/output', Float32MultiArray, queue_size=1)
@@ -29,19 +31,11 @@ class OutputFusion(object):
 
         if self.parsed_camera is not None:
             fusion = self.output_fusion(parsed_lidar, self.parsed_camera)
-            #self.parsed_camera = None
-            print(fusion)
-
-            mat = Float32MultiArray()
-            mat.layout.dim.append(MultiArrayDimension())
-            mat.layout.dim.append(MultiArrayDimension())
-            mat.layout.dim[0].label = "height"
-            mat.layout.dim[1].label = "width"
-            mat.layout.dim[0].size = fusion.shape[0]
-            mat.layout.dim[1].size = fusion.shape[1]
             
-            matrix_flat = fusion.flatten().tolist()
-            mat.data = matrix_flat
+            if opt.visualize:
+                print(fusion)
+                
+            mat = convert_numpy_to_rosMultiArr(fusion)
             self.pub.publish(mat)
                 #time.sleep(1)
 
@@ -103,6 +97,13 @@ class OutputFusion(object):
         lidar_output = lidar_output[['x', 'y', 'z', 'c']][lidar_output['c'] != -1]
         return lidar_output.values
 
+def parse_arguments(known=False):
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--visualize', action='store_true', help= "It will open a window and shows the cone detection made by the stereo camera model.")
+    opt = parser.parse_known_args()[0] if known else parser.parse_args()
+    return opt
+
 def main():
     try:
         OutputFusion()
@@ -110,5 +111,6 @@ def main():
         pass
 
 if __name__ == '__main__':
+    opt = parse_arguments()
     main()
 

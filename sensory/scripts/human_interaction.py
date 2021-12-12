@@ -21,6 +21,7 @@ def talker(message):
     rospy.loginfo(message)
     pub.publish(message)
 
+
 if __name__ == '__main__':
 
     try:

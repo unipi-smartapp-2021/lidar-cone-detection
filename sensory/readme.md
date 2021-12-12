@@ -1,9 +1,9 @@
+## Let sensors run
 In order, run the following commands:
 
-## Let sensors run
-To run the stereo camera, type: `rosrun sensory rgb_camera.py` <br/>
-To run the lidar, type: `rosrun sensory lidar.py` <br/>
-To run the sensor fusion, type: `rosrun sensory routput_fusion.py` <br/>
+1)To run the stereo camera, type: `rosrun sensory rgb_camera.py` <br/>
+2)To run the lidar, type: `rosrun sensory lidar.py` <br/>
+**3**)To run the sensor fusion, type: `rosrun sensory routput_fusion.py` <br/>
 
 ## Human interaction
 As you now from the rules of the race, the car can start to run only after it receives a "start" command. <br/>

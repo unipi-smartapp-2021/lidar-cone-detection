@@ -9,11 +9,11 @@ from rospy.numpy_msg import numpy_msg
 from std_msgs.msg import String, Float32MultiArray, MultiArrayDimension, Float32
 import numpy as np
 import cv2
-from sensory.utilities import from_matrix_to_image
+from sensory.utilities import from_matrix_to_image, convert_numpy_to_rosMultiArr, visualization
 from sensory.post_processing import *
 #from utilities import from_matrix_to_image
 #from post_processing import *
-
+import argparse
 import os
 import torch
 
@@ -22,23 +22,17 @@ class SubscribePointCloud(object):
     def __init__(self):
         rospy.init_node('subscribe_custom_point_cloud')
         self.script_path = os.path.dirname(os.path.realpath(__file__))
-        self.model = torch.hub.load(self.script_path + '/ultralytics_yolov5_master', 'custom',
-                                    path=self.script_path + '/ultralytics_yolov5_master/weights/lidar_weights.pt', source='local', force_reload = True)
+        self.model = torch.hub.load(self.script_path + '/yolov5', 'custom',
+                                    path=self.script_path + '/weights/lidar_weights.pt', source='local', force_reload = True)
        
         self.set_model_confidence()
         self.model.to(torch.device("cuda"))
         rospy.Subscriber('/carla/ego_vehicle/lidar', PointCloud2, self.callback, queue_size=1)
         rospy.Subscriber('/lidar/confidence', Float32, self.confidence_callback)
         self.pub = rospy.Publisher('/model/lidar/output', Float32MultiArray, queue_size=1)
-        
+        rospy.loginfo("Ready")
         rospy.spin()
 
-    def writeFile(self, r_minmax, theta_minmax, phi_minmax):
-        f = open(self.script_path + "/minmax.txt", "w")
-        f.write(str(r_minmax[0])+" "+str(r_minmax[1]))
-        f.write(" "+str(theta_minmax[0])+" "+str(theta_minmax[1]))
-        f.write(" "+str(phi_minmax[0]) + " " + str(phi_minmax[1]))
-        f.close()
     
     def set_model_confidence(self):
         def_confidence = 0.4
@@ -65,11 +59,7 @@ class SubscribePointCloud(object):
             i = i+1
 
         img_name = 'lidar_frame_out_'+ str(point_cloud.header.seq)+'.png'
-        #rospy.loginfo(img_name)
-        #save_numpy_as_pcd(m_from_lidar, './lidar_pcd.pcd')
         img = from_matrix_to_image(m_from_lidar, img_name=img_name, out_img=False)
-        #cv2.imshow("Image window", img) #only for visualization purpose   
-        #cv2.waitKey(1) #only for visualization purpose
         return img, m_from_lidar
 
     def callback(self, lidar_frames):
@@ -93,38 +83,25 @@ class SubscribePointCloud(object):
         output:np.ndarray = post_processing(raw_pcd, (r_minmax, theta_minmax, phi_minmax), yolo_boxes, img_df, (480, 480), 255, OutputTypes.CENTER)
         #print(output)
 
-        '''results.save(self.script_path + '/lidars/')
-        if len(results.files)>0:
-            tmp = self.script_path + '/lidars/' + results.files[0]
-            img = cv2.imread(tmp)
-            cv2.imshow("Image window", img) #only for visualization purpose   
-            cv2.waitKey(1) #only for visualization purpose
-        else:
-            cv2.imshow("Image window", results.imgs) #only for visualization purpose   
-            cv2.waitKey(1) #only for visua'''
+        if opt.visualize:
+            visualization(self.script_path + '/lidars/', results)
 
 
         #with open("postprocessed.txt", mode='w') as post:
         #np.savetxt(self.script_path + "/postprocessed.txt", output)
             
-        mat = Float32MultiArray()
-        mat.layout.dim.append(MultiArrayDimension())
-        mat.layout.dim.append(MultiArrayDimension())
-        mat.layout.dim[0].label = "height"
-        mat.layout.dim[1].label = "width"
-        mat.layout.dim[0].size = output.shape[0]
-        mat.layout.dim[1].size = output.shape[1]
-        
-        matrix_flat = output.flatten().tolist()
-        mat.data = matrix_flat
-
-        #print(output)
-        #print()
-
+        mat = convert_numpy_to_rosMultiArr(output)
         self.pub.publish(mat)
 
         #time.sleep(4)
 
+def parse_arguments(known=False):
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--visualize', action='store_true', help= "It will open a window and shows the cone detection made by the stereo camera model.")
+    opt = parser.parse_known_args()[0] if known else parser.parse_args()
+    return opt
+    
 
 def main():
     try:
@@ -133,4 +110,5 @@ def main():
         pass
 
 if __name__ == '__main__':
+    opt = parse_arguments()
     main()

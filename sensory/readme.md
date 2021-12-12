@@ -15,4 +15,4 @@ In case you want to suddenly stop the car, type: `rosrun sensory human_interacti
 To change the confidence of the lidar model, type: `rostopic pub /lidar/confidence std_msgs/Float32 <float_value>` <br/>
 To change the confidence of the camera model, type: `rostopic pub /camera/confidence std_msgs/Float32 <float_value>` <br/>
 
-**Important** The <float_value> should be within the range [0,1].
+**Important:** The <float_value> should be within the range [0,1].

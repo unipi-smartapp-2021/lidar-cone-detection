@@ -7,7 +7,7 @@ To run the sensor fusion, type: `rosrun sensory routput_fusion.py` <br/>
 
 ## Human interaction
 As you now from the rules of the race, the car can start to run only after it receives a "start" command. <br/>
-To do that, type: `rosrun sensory human_interaction.py start`. <br/>
+To do that, type: `rosrun sensory human_interaction.py start` <br/>
 In case you want to suddenly stop the car, type: `rosrun sensory human_interaction.py stop` <br/>
 
 ## Change the confidence of the models

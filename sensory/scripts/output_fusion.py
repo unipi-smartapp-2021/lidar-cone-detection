@@ -100,7 +100,7 @@ class OutputFusion(object):
 def parse_arguments(known=False):
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('--visualize', action='store_true', help= "It will open a window and shows the cone detection made by the stereo camera model.")
+    parser.add_argument('--visualize', action='store_true', help= "It will print the results of the fusion of the otputs coming from the lidar and the stereo camera.")
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 

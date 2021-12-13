@@ -7,7 +7,7 @@ In order, run the following commands:
 If you want to visualize the real-time cone recognition, add the option `--visualize` at the end of each one of the aforementioned commands.
 
 ## Human interaction
-As you now from the rules of the race, the car can start to run only after it receives a "start" command. <br/>
+As you now from the rules of the race, the car can start running only after it receives a "start" command. <br/>
 To do that, type: `rosrun sensory human_interaction.py start` <br/>
 In case you want to suddenly stop the car, type: `rosrun sensory human_interaction.py stop` <br/>
 

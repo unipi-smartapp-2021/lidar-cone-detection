@@ -3,7 +3,7 @@ In order, run the following commands:
 
 1)To run the stereo camera, type: `rosrun sensory rgb_camera.py` <br/>
 2)To run the lidar, type: `rosrun sensory lidar.py` <br/>
-**3**)To run the sensor fusion, type: `rosrun sensory routput_fusion.py` <br/>
+**3**)To run the sensor fusion, type: `rosrun sensory output_fusion.py` <br/>
 If you want to visualize the real-time cone recognition, add the option `--visualize` at the end of each one of the aforementioned commands.
 
 ## Human interaction

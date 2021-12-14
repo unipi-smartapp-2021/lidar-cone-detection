@@ -84,7 +84,7 @@ class SubscribePointCloud(object):
         #print(output)
 
         if opt.visualize:
-            visualization(self.script_path + '/lidars/', results)
+            visualization(results)
 
 
         #with open("postprocessed.txt", mode='w') as post:
@@ -98,7 +98,7 @@ class SubscribePointCloud(object):
 def parse_arguments(known=False):
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('--visualize', action='store_true', help= "It will open a window and shows the cone detection made by the stereo camera model.")
+    parser.add_argument('--visualize', action='store_true', help= "It will open a window and shows the cone detection made by the lidar model.")
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
     

@@ -63,9 +63,9 @@ class SubscribeRGBFrontImage(object):
         #cv2.imwrite(self.script_path + '/rgb_camera.png', img)
         results = self.model(img)#.reshape((img.shape[0], img.shape[1])))
         ris = results.pandas().xyxy[0]
-        
+       
         if opt.visualize:
-            visualization(self.script_path + '/cameras/', results)
+            visualization(results)
         
         to_publish = ris.values[:,:-1]
         mat = convert_numpy_to_rosMultiArr(to_publish)

@@ -9,7 +9,7 @@ from rospy.numpy_msg import numpy_msg
 from std_msgs.msg import String, Float32MultiArray, MultiArrayDimension, Float32
 import numpy as np
 import cv2
-from sensory.utilities import from_matrix_to_image, convert_numpy_to_rosMultiArr, visualization
+from sensory.utilities import from_matrix_to_image, convert_numpy_to_rosMultiArr, visualization, check_confidence
 from sensory.post_processing import *
 #from utilities import from_matrix_to_image
 #from post_processing import *
@@ -45,11 +45,13 @@ class SubscribePointCloud(object):
             self.model.conf = def_confidence # default confidence
 
     def confidence_callback(self, confidence):
-        confidence=confidence.data
+        confidence = confidence.data
         if type(confidence) is float:
-            rospy.loginfo("Received a new value for the confidence: " + str(confidence))
-            self.model.conf = confidence     
-
+            if check_confidence(confidence):
+                rospy.loginfo("The new confidence for the model is: " + str(confidence))
+                self.model.conf = confidence
+            else:
+                rospy.logwarn("The new value for the model confidence is not inside the range (0,1). The model still uses "+ str(self.model.conf))
     def create_image_from_lidar(self, point_cloud:PointCloud2):
         i=0
         n_rows, n_colums = point_cloud.width, 3
@@ -84,7 +86,7 @@ class SubscribePointCloud(object):
         #print(output)
 
         if opt.visualize:
-            visualization(self.script_path + '/lidars/', results)
+            visualization(results)
 
 
         #with open("postprocessed.txt", mode='w') as post:
@@ -98,7 +100,7 @@ class SubscribePointCloud(object):
 def parse_arguments(known=False):
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('--visualize', action='store_true', help= "It will open a window and shows the cone detection made by the stereo camera model.")
+    parser.add_argument('--visualize', action='store_true', help= "It will open a window and shows the cone detection made by the lidar model.")
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
     

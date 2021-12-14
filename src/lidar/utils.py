@@ -1,4 +1,4 @@
-import ros_numpy
+from ros_numpy.src import ros_numpy
 import numpy as np
 from PIL import Image
 from pypcd import pypcd
@@ -71,7 +71,6 @@ def sph2cart(az, el, r):
     y = rcos_theta * np.sin(az)
     z = r * np.sin(el)
     return x, y, z
-
 
 
 def min_max_scale(min_max, data, max=None, min=None):

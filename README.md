@@ -1,5 +1,10 @@
 # Cone detection
 Sensory data group that works with the cone detection for both stereocamera and lidar, the ```src``` directory is about the training and inference for the two yolov5 models, the ```sensory``` directory contains everything needed to let our work run on the simulator.
+To clone the repository with its submodules:
+```
+git clone —recursive https://github.com/unipi-smartapp-2021/sensory-cone-detection
+```
+After that, follow all the readmes in each directory to understand how to work with both the model training and simulator detection.
 ## Repository structure
 ```bash
 📂sensory-cone-detection

@@ -10,7 +10,7 @@ Upload the dataset in the apposite directories or use manage_dataset.py to build
 ```python
 python manage_dataset.py --dataset your_dataset_directory --path datasets/your_dataset
 ```
-The command will also take care of converting the images into grayscale ones and to split them into train, validation and test sets.
+The command will also take care of converting the images into grayscale ones and to split them into train, validation and test sets, then it will create the respective files for the sets. Note that the test set is not mandatory.
 Remember to delete your old dataset directory only after you've moved or copied the files, then you're ready to work.
 
 **Reminder for you:** the datasets we worked on are on a shared drive since they are too big to be uploaded here on github, so if you want to try the notebook you should build your own dataset (or you can ask us to share the drive, we're not that strict).

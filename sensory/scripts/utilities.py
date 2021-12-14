@@ -22,16 +22,12 @@ def convert_numpy_to_rosMultiArr(matrix:np.ndarray):
     return mat
 
 
-'''def visualization(script_path:str, results):
-    results.save(script_path)
-    if len(results.files)>0:
-        tmp = script_path + results.files[0]
-        img = cv2.imread(tmp)
-        cv2.imshow("Image window", img) #only for visualization purpose   
-        cv2.waitKey(1) #only for visualization purpose
-    else:
-        cv2.imshow("Image window", results.imgs) #only for visualization purpose   
-        cv2.waitKey(1)'''
+def check_confidence(value: float)-> bool:
+    validity = False
+    if value > 0 and value < 1:
+        validity = True
+    return validity    
+        
 
 def visualization(results):
     results.display(render=True)

@@ -11,7 +11,7 @@ import cv2
 import torch
 import os
 import argparse
-from sensory.utilities import convert_numpy_to_rosMultiArr, visualization
+from sensory.utilities import convert_numpy_to_rosMultiArr, visualization, check_confidence
 
 class SubscribeRGBFrontImage(object):
     def __init__(self):
@@ -30,12 +30,15 @@ class SubscribeRGBFrontImage(object):
         rospy.spin()
 
     def confidence_callback(self, confidence):
-        confidence=confidence.data
+        confidence = confidence.data
         if type(confidence) is float:
-            rospy.loginfo("Received a new value for the confidence: " + str(confidence))
-            self.model.conf = confidence
+            if check_confidence(confidence):
+                rospy.loginfo("The new confidence for the model is: " + str(confidence))
+                self.model.conf = confidence
+            else:
+                rospy.logwarn("The new value for the model confidence is not inside the range (0,1). The model still uses "+ str(self.model.conf))
 
-
+    
     def set_model_confidence(self):
         def_confidence = 0.74
         if rospy.has_param("/camera/model_confidence"):

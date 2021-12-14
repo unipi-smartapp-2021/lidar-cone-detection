@@ -22,4 +22,4 @@ As you now from the rules of the race, the car can start running only after it r
 - To change the confidence of the lidar model: ```rostopic pub /lidar/confidence std_msgs/Float32 <float_value>```
 - To change the confidence of the camera model: ```rostopic pub /camera/confidence std_msgs/Float32 <float_value>```
 
-**Important:** The _<float_value>_ should be within the range [0, 1].
+**Important:** The _<float_value>_ should be within the range (0, 1).

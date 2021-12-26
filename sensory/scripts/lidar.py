@@ -97,7 +97,7 @@ class SubscribePointCloud(object):
 
         #time.sleep(4)
 
-def parse_arguments(known=False):
+def parse_arguments(known=True):
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--visualize', action='store_true', help= "It will open a window and shows the cone detection made by the lidar model.")

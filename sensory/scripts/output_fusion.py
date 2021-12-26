@@ -97,7 +97,7 @@ class OutputFusion(object):
         lidar_output = lidar_output[['x', 'y', 'z', 'c']][lidar_output['c'] != -1]
         return lidar_output.values
 
-def parse_arguments(known=False):
+def parse_arguments(known=True):
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--visualize', action='store_true', help= "It will print the results of the fusion of the otputs coming from the lidar and the stereo camera.")

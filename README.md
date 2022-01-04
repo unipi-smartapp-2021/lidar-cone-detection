@@ -12,6 +12,9 @@ After that, follow all the readmes in each directory to understand how to work w
 ├── 📄requirements.txt
 ├── 📂sensory # this is the directory to let our work run on the simulator
 │   ├── 📄CMakeLists.txt
+│   ├── 📂launch
+│   │   ├── 📄record_sensory.launch
+│   │   └── 📄sensory_ws.launch
 │   ├── 📄package.xml
 │   ├── 📂scripts
 │   │   ├── 📂cameras

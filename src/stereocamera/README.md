@@ -6,16 +6,15 @@ _**It's higly recommended to take a look at the notebook for a better understand
 ### Repositories and requirements
 Before you start working with the project, remember to clone this repository.
 ```
-git clone "https://github.com/unipi-smartapp-2021/lidar-cone-detection"
+git clone --recursive "https://github.com/unipi-smartapp-2021/sensory-cone-detection"
 ```
-And the official yolov5 repository too (we're deciding if to use it as submodule or not).
+Clone the official yolov5 repository too or just use the model from ```sensory-cone-detection/sensory/scripts/yolov5```.
 ```
 git clone "https://github.com/ultralytics/yolov5"
 ```
 Install the requirements for the model correct working.
 ```python
-pip install -r requirements.txt
-pip install -r yolov5/requirements.txt  # not needed if we decide to use yolov5 as submodule
+pip install -r path_to_yolov5_directory/requirements.txt  # not needed if we decide to use yolov5 as submodule
 ```
 ### Managing the dataset
 Upload the dataset in the apposite directories following what is suggested in https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data, section 1.3, or use ```manage_dataset.py``` to let it do the entire work.
@@ -27,7 +26,7 @@ After you managed to split the dataset in train, validation and test sets (this 
 **Modify the .yaml file to your needs**, this is vital to work with yolov5 on a custom dataset.
 ```yaml
 # Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
-path: datasets/your_dataset # dataset root dir
+path: path_to_your_camera_dataset_directory # dataset root dir
 train: train.txt # train images (relative to 'path')
 val: validation.txt # val images (relative to 'path')
 test: test.txt # test images (optional)

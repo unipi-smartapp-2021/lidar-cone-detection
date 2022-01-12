@@ -3,28 +3,9 @@ import pandas as pd
 
 from utils import min_max_scale
 
-"""def depth_to_pcd(depth_img):
-    fovx = math.radians(110)
-    fovy = math.radians(70)
-    img_height = 720
-    img_width = 1280
-    fx = img_width / (2 * math.tan(fovx / 2))
-    fy = img_height / (2 * math.tan(fovy / 2))
-    cx = img_width / 2
-    cy = img_height / 2
-    cam_mat = o3d.camera.PinholeCameraIntrinsic(img_width, img_height, fx, fy, cx, cy)
-    pcd = o3d.geometry.PointCloud.create_from_depth_image(depth_img.depth, cam_mat)
-    quaternion = [[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]] #rotation
-    pcd.transform(quaternion)
-    raw_pcd = np.array(pcd.points)
-    pcd_df = pd.DataFrame(raw_pcd, columns=["x", "y", "z"])  # x horizontal, y vertical, z distance
-    print(pcd_df.describe())
-    print(pcd_df['z'].value_counts())
-    pcd_df = pcd_df[pcd_df['z'] > pcd_df['z'].min()]
-    return pcd_df
-    # o3d.visualization.draw_geometries([pcd])"""
 
-"""def test_pointcloud_space():
+
+def test_pointcloud_space():
     colored = o3d.io.read_image("./stereo/rgb_camera.png")
     depth = o3d.io.read_image("./stereo/depth_camera.png")
     depth = np.array(depth)
@@ -43,7 +24,7 @@ from utils import min_max_scale
         cone_pcd = cone_pcd[cone_pcd['z'] == cone_pcd['z'].max()]
         # cone_pcd['class'] = row['class']
         print(cone_pcd['z'].value_counts())
-        cones = np.vstack([cones, cone_pcd.values])"""
+        cones = np.vstack([cones, cone_pcd.values])
 
 
 def output_fusion(lidar_output, stereo_yolo_out):

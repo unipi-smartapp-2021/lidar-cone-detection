@@ -48,6 +48,7 @@ if __name__ == "__main__":
     i = 0
     bag = [msg for msg in rosbag.Bag(bag_file__path).read_messages()]
     for topic, msg, t in tqdm(bag):
+        print(topic, t)
         if topic == topic_to_filter:
             pcd_np, pcd = convert_pc_msg_to_np(msg)
             if save_with_method:
@@ -60,6 +61,7 @@ if __name__ == "__main__":
                             data = " ".join([str(x) for x in data])
 
                         datafile.write("{0} {1}\n".format(label, data))
+                        print("saved")
 
                     for pointcloud in pcd.pc_data:
                         pointcloud_str = ""
@@ -67,5 +69,6 @@ if __name__ == "__main__":
                             pointcloud_str = pointcloud_str + str(point) + " "
 
                         datafile.write("{0}\n".format(pointcloud_str[:-1]))
+                        print("saved")
 
             i += 1

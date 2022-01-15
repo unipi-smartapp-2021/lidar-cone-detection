@@ -4,10 +4,13 @@ To clone the repository with its submodules:
 ```
 git clone —recursive https://github.com/unipi-smartapp-2021/sensory-cone-detection
 ```
-After that, follow all the readmes in each directory to understand how to work with both the model training and simulator detection.
+After that, follow all the readmes in each directory to understand how to work with both the model training and simulator detection or read the documentation files in the respective directory.
 ## Repository structure
 ```bash
 📂sensory-cone-detection
+├── 📂documentation
+│   ├── 📄Sensory_ROS_documentaion.pdf
+│   └── 📄Sensory_Recognition_documentation.pdf
 ├── 📄README.md
 ├── 📄requirements.txt
 ├── 📂sensory # this is the directory to let our work run on the simulator

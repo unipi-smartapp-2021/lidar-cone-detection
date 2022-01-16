@@ -5,7 +5,12 @@ import numpy as np
 import os
 import argparse
 from pypcd import pypcd
+from cv_bridge import CvBridge
+import cv2
 
+lidar_topic = "/carla/ego_vehicle/lidar"
+rgb_camera_topic = "/carla/ego_vehicle/rgb_front/image"
+depth_camera_topic = "/carla/ego_vehicle/depth_front/image"
 
 def convert_pc_msg_to_np(pc_msg):
     """
@@ -27,7 +32,7 @@ def convert_pc_msg_to_np(pc_msg):
 
 def parse_arguments(known=False):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--topic', type=str, default="/carla/ego_vehicle/lidar", help='message topic')
+    parser.add_argument('--topic', type=str, default=lidar_topic, help='message topic')
     parser.add_argument('--rosbag', type=str, default="", help='dataset_bag.bag path')
     parser.add_argument('--path', type=str, default="src/lidar/datasets",
                         help='path where the pointclouds are going to be stored')
@@ -36,36 +41,87 @@ def parse_arguments(known=False):
     return opt
 
 
-if __name__ == "__main__":
-    opt_parser = parse_arguments()
-    topic_to_filter = opt_parser.topic
-    bag_file__path = opt_parser.rosbag
-    pcd_output_path = opt_parser.path
-    save_with_method = opt_parser.save
-    if not os.path.exists(pcd_output_path):
-        os.mkdir(pcd_output_path)
-    
-    i = 0
+# if __name__ == "__main__":
+#
+#     opt_parser = parse_arguments()
+#
+#     topic_to_filter = opt_parser.topic
+#     bag_file__path = opt_parser.rosbag
+#     output_path = opt_parser.path
+#
+#     save_with_method = opt_parser.save
+#     # if not os.path.exists(output_path):
+#     #     os.mkdir(output_path)
+#     i = 0
+#
+#     bag = [msg for msg in rosbag.Bag(bag_file__path).read_messages()]
+#
+#     for topic, msg, t in tqdm(bag):
+#         input(topic)
+#         if topic == topic_to_filter:
+#             if topic == lidar_topic:
+#                 pcd_np, pcd = convert_pc_msg_to_np(msg)
+#                 if save_with_method:
+#                     pcd.save(output_path + '/lidar_pointcloud' + str(i) + '.pcd')
+#                 else:
+#                     with open(output_path + "/lidar_pointcloud" + str(i) + ".pcd", "w") as datafile:
+#                         for label, data in zip(pcd.get_metadata(), pcd.get_metadata().values()):
+#                             label = label.upper()
+#                             if type(data) == list:
+#                                 data = " ".join([str(x) for x in data])
+#
+#                             datafile.write("{0} {1}\n".format(label, data))
+#                         for pointcloud in pcd.pc_data:
+#                             pointcloud_str = ""
+#                             for point in pointcloud[0]:
+#                                 pointcloud_str = pointcloud_str + str(point) + " "
+#
+#                             datafile.write("{0}\n".format(pointcloud_str[:-1]))
+#             elif topic == rgb_camera_topic:
+#                 input()
+#                 bridge = CvBridge()
+#                 cv_img = bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")
+#                 cv2.imwrite(os.path.join(output_path, "frame{}.png".format(i)), cv_img)
+#
+#
+#             i += 1
+
+bags_path = "./bags"
+output_basepath = "./converted_bags/"
+topic_to_filter = depth_camera_topic
+topic_name = "depth"
+bridge = CvBridge()
+for bag in os.listdir(bags_path):
+    bag_file__path = os.path.join(bags_path,bag)
+    output_path = os.path.join(output_basepath,bag.replace(".bag", ""),topic_name)
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
     bag = [msg for msg in rosbag.Bag(bag_file__path).read_messages()]
+    i=0
     for topic, msg, t in tqdm(bag):
         if topic == topic_to_filter:
-            pcd_np, pcd = convert_pc_msg_to_np(msg)
-            if save_with_method:
-                pcd.save(pcd_output_path + '/lidar_pointcloud' + str(i) + '.pcd')
-            else:
-                with open(pcd_output_path + "/lidar_pointcloud" + str(i) + ".pcd", "w") as datafile:
+            if topic == lidar_topic:
+                pcd_np, pcd = convert_pc_msg_to_np(msg)
+
+                with open(output_path + "/lidar_pointcloud" + str(i) + ".pcd", "w") as datafile:
                     for label, data in zip(pcd.get_metadata(), pcd.get_metadata().values()):
                         label = label.upper()
                         if type(data) == list:
                             data = " ".join([str(x) for x in data])
 
                         datafile.write("{0} {1}\n".format(label, data))
-
                     for pointcloud in pcd.pc_data:
                         pointcloud_str = ""
                         for point in pointcloud[0]:
                             pointcloud_str = pointcloud_str + str(point) + " "
 
                         datafile.write("{0}\n".format(pointcloud_str[:-1]))
+            elif topic == rgb_camera_topic:
+                # cv_img = bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")
+                cv_img = np.frombuffer(msg.data, dtype=np.uint8).reshape(msg.height, msg.width, -1)
+                cv2.imwrite(os.path.join(output_path, "frame{}.png".format(i)), cv_img)
+            elif topic == depth_camera_topic:
+                cv_img = np.frombuffer(msg.data, dtype=np.float32).reshape(msg.height, msg.width, -1)
+                cv2.imwrite(os.path.join(output_path, "frame{}.png".format(i)), cv_img)
 
             i += 1

@@ -1,6 +1,6 @@
 Data = load('T:\pcds\from500_600\out\labels.mat');
 DataTruth = Data.gTruth.ROILabelData.pointcloudSequence_500_599.cone;
-for i = 1:length(DataTruth)
+for i = 1:length(DataTruth.ROILabelData.depth_pcd)
     file = Data.gTruth.DataSource.Name
     cloud = Data.gTruth.ROILabelData.pointcloudSequence_500_599.cone{i}
     if length(cloud(:)) > 0

@@ -58,26 +58,27 @@ After that, follow all the readmes in each directory to understand how to work w
     │   ├── 📄full_workflow.py
     │   ├── 📄img2pcd.py
     │   ├── 📄__init__.py
+    │   ├── 📂interpolation_data
+    │   │   └── 📄...
+    │   ├── 📂interpolation_models
+    │   │   └── 📄...
     │   ├── 📄lidar_cone_detection.ipynb
     │   ├── 📄lidar_weights.pt
+    │   ├── 📂mathlab_exportlabel_script
+    │   │   ├── 📄export_interpolation_label.asv
+    │   │   ├── 📄export_interpolation_label.m
+    │   │   ├── 📄export_label.asv
+    │   │   └── 📄export_label.m
     │   ├── 📄output_fusion.py
     │   ├── 📄pcd2img.py
     │   ├── 📂post_process_data
-    │   │   ├── 📄lidar.csv
-    │   │   ├── 📄lidar_minmax.txt
-    │   │   ├── 📄lidar.pcd
-    │   │   ├── 📄lidar.png
-    │   │   └── 📄lidar.txt
+    │   │   └── 📄...
     │   ├── 📄post_processing.py
     │   ├── 📄read_matlab_labels.py
     │   ├── 📄README.md
     │   ├── 📕ros_numpy
     │   ├── 📂stereo
-    │   │   ├── 📄depth_camera.png
-    │   │   ├── 📄minmax.txt
-    │   │   ├── 📄postprocessed.txt
-    │   │   ├── 📄rgb_camera.png
-    │   │   └── 📄stereo_yolo_boxes.txt
+    │   │   └── 📄...
     │   └── 📄utils.py
     ├── 📄manage_dataset.py
     └── 📂stereocamera
@@ -88,3 +89,9 @@ After that, follow all the readmes in each directory to understand how to work w
         ├── 📄conedataset_camera.yaml
         └── 📄README.md
 ```
+
+Nice directory tree, how can i create it?
+```bash
+sudo apt install tree
+```
+Go into the directory you want and run ```tree```, copy the tree where you want and customize it to your needs.

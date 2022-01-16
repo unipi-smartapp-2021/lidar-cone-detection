@@ -92,13 +92,18 @@ def min_max_scale(min_max, data, max=None, min=None):
     return data_scaled, (min, max)
 
 
-def read_pcd_and_filter(path, front_cut=True):
+def read_pcd_and_filter(path, front_cut=True, as_array=True):
     """Read the pcd file and filter by x values and height values."""
     cloud = o3d.io.read_point_cloud(path) # Read the point cloud file
     out_arr = np.asarray(cloud.points)
     if front_cut:
         out_arr = np.asarray(list(filter(lambda x: (0 < x[0] < 40) and (-0.5 < x[2] < 0.90), out_arr)))
-    return out_arr
+    if as_array:
+        return out_arr
+    else:
+        pcd = o3d.geometry.PointCloud()
+        pcd.points = o3d.utility.Vector3dVector(out_arr)
+        return pcd
 
 
 def create_image(img_size, r, az, el, output_path='a.png'):

@@ -1,3 +1,5 @@
+import os
+import numpy as np
 from utils import *
 import pandas as pd
 import math
@@ -9,7 +11,27 @@ import scipy.stats as stats
 class OutputTypes:
     CENTER = "center"
     BOXES = "boxes"
-    output_dim = {CENTER: 3, BOXES: 6}
+    POINTS = "points"
+    output_dim = {CENTER: 3, BOXES: 6, POINTS: 3}
+
+
+def select_points(cone, first_quantile, second_quantile):
+    """
+    :return: the filtered pcd with only the cone points
+    """
+    box_arr = select_box(cone, first_quantile, second_quantile)
+
+    phimin, phimax, thetamin, thetamax, rmin, rmax = box_arr
+    box = {}
+    box["theta_mins"]= thetamin
+    box["phi_mins"]= phimin
+    box["theta_maxs"]= thetamax
+    box["phi_maxs"]= phimax
+    box["r_mins"] = rmin
+    box["r_maxs"] = rmax
+
+    points = filter_by_spherical(box, cone)
+    return points
 
 
 def post_processing(raw_pcd, polar_minmaxes, yolo_boxes, img_df, image_size, rmax=255, output_type=OutputTypes.CENTER, first_quantile=0.7, second_quantile=0.6):
@@ -31,7 +53,8 @@ def post_processing(raw_pcd, polar_minmaxes, yolo_boxes, img_df, image_size, rma
     r_minmax, theta_minmax, phi_minmax = polar_minmaxes                         #unzip polar minmaxes
     img_width, img_height = image_size                                          #getting the width and height of the image
 
-    for index, box in yolo_boxes.iterrows():                                    #interate over the boxes found by the lidar model
+    # iterate over the boxes found by the lidar model
+    for index, box in yolo_boxes.iterrows():
         theta_min = math.floor(box["xmin"])
         theta_max = math.ceil(box["xmax"])
         phi_min = math.floor(box["ymin"])
@@ -44,7 +67,7 @@ def post_processing(raw_pcd, polar_minmaxes, yolo_boxes, img_df, image_size, rma
 
     yolo_boxes = yolo_boxes[(yolo_boxes['r_mins'] != rmax) & (yolo_boxes['r_maxs'] != rmax)] # remove the background
 
-    """Rescaling from spherical coordinate in the image widht and height in the original spherical coordinate scale"""
+    """Rescaling from spherical coordinate in the image width and height in the original spherical coordinate scale"""
     yolo_boxes["theta_mins"], _ = min_max_scale(theta_minmax, yolo_boxes["xmin"], max=img_width-1, min=0)
     yolo_boxes["phi_mins"], _ = min_max_scale(phi_minmax, yolo_boxes["ymin"], max=img_height-1, min=0)
     yolo_boxes["theta_maxs"], _ = min_max_scale(theta_minmax, yolo_boxes["xmax"], max=img_width-1, min=0)
@@ -57,19 +80,30 @@ def post_processing(raw_pcd, polar_minmaxes, yolo_boxes, img_df, image_size, rma
     filtered_output2 = np.zeros(shape=(0, 3))
     """Filtering all the points between the 3Dboxes"""
     for index, box in yolo_boxes.iterrows():
-        cone = raw_pcd[(raw_pcd['phi'].between(left=box['phi_mins'], right=box['phi_maxs'], inclusive=True))
-                       & (raw_pcd['r'].between(left=box['r_mins'], right=box['r_maxs'], inclusive=True))
-                       & (raw_pcd['theta'].between(left=box['theta_mins'], right=box['theta_maxs'], inclusive=True))]
+        cone = filter_by_spherical(box, raw_pcd)
         filtered_output2 = np.vstack([filtered_output2, cone[['X', 'Y', 'Z']].values])
+
         if output_type == OutputTypes.CENTER:
             cone_center = select_center(cone)
             filtered_output = np.vstack([filtered_output, cone_center])
         elif output_type == OutputTypes.BOXES:
             cone_box = select_box(cone, first_quantile, second_quantile)
             filtered_output = np.vstack([filtered_output, cone_box])
+        elif output_type == OutputTypes.POINTS:
+            cone_points = select_points(cone, first_quantile, second_quantile)
+            # visualize_cartesian(cone_points[['X', 'Y', 'Z']].values)
+            filtered_output = np.vstack([filtered_output, cone_points[['X', 'Y', 'Z']].values])
         else:
             raise ValueError("select an output type")
     return filtered_output, filtered_output2
+
+
+def filter_by_spherical(box, pcd):
+
+    cone = pcd[(pcd['phi'].between(left=box['phi_mins'], right=box['phi_maxs'], inclusive='both'))
+               & (pcd['r'].between(left=box['r_mins'], right=box['r_maxs'], inclusive='both'))
+               & (pcd['theta'].between(left=box['theta_mins'], right=box['theta_maxs'], inclusive='both'))]
+    return cone
 
 
 def select_box(cone, first_quantile, second_quantile):
@@ -115,23 +149,30 @@ def select_center(cone):
     # print("{} {} {} ".format(row['phi_maxs']-row['phi_mins'], row['theta_maxs']-row['theta_mins'], rcenter))
     return cone_center
 
+def post_processing_frompath(path, front_cut=False):
+    # Read the point cloud file
+    cloud = read_pcd_and_filter(os.path.join(path, "lidar.pcd"), front_cut=front_cut, as_array=False)
+
+    raw_pcd = pd.DataFrame(cloud.points, columns=["X", "Y", "Z"])
+    # print(raw_pcd.describe())
+    # visualize_cartesian(raw_pcd[['X', 'Y', 'Z']].values)
+    raw_pcd['theta'], raw_pcd['phi'], raw_pcd['r'] = cart2sph(raw_pcd['Y'], raw_pcd["Z"],raw_pcd['X'])  # convert to spherical coordinate
+    r_minmax, theta_minmax, phi_minmax = read_minmax_file(os.path.join(path, "lidar_minmax.txt"))
+    yolo_boxes = pd.read_csv(os.path.join(path, "lidar.csv"))
+
+    img_df = pd.DataFrame()
+    img_df['r'], img_df['phi'], img_df['theta'] = read_spherical_image(os.path.join(path, "lidar.png"))
+
+    array, visualiz = post_processing(raw_pcd, (r_minmax, theta_minmax, phi_minmax), yolo_boxes, img_df, (480, 480),
+                                      255, OutputTypes.CENTER)
+
+    return array
 
 """ Example """
 
-path = "./post_process_data/"
-cloud = o3d.io.read_point_cloud(path+"lidar.pcd") # Read the point cloud file
-raw_pcd = pd.DataFrame(cloud.points, columns=["X", "Y", "Z"])
-print(raw_pcd.describe())
-# visualize_cartesian(raw_pcd[['X','Y','Z']].values)
-raw_pcd['theta'], raw_pcd['phi'], raw_pcd['r'] = cart2sph(raw_pcd['Y'], raw_pcd["Z"], raw_pcd['X']) #convert to spherical coordinate
-r_minmax, theta_minmax, phi_minmax = read_minmax_file(path+"lidar_minmax.txt")
-yolo_boxes = pd.read_csv(path+"lidar.csv")
-
-img_df = pd.DataFrame()
-img_df['r'], img_df['phi'], img_df['theta'] = read_spherical_image(path+"lidar.png")
-
-array, visualiz = post_processing(raw_pcd, (r_minmax, theta_minmax, phi_minmax), yolo_boxes, img_df, (480, 480), 255, OutputTypes.CENTER)
-print(array)
-plt.scatter(array[:, 0], array[:, 1])
-plt.show()
+# path = "./post_process_data/"
+# post_processing_frompath(path)
+# print(array)
+# plt.scatter(array[:, 0], array[:, 1])
+# plt.show()
 
